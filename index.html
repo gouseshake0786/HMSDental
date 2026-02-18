@@ -790,7 +790,7 @@
   <!-- ========== JAVASCRIPT ========== -->
   <script>
     // ================= CONFIGURATION =================
-    const API = "https://script.google.com/macros/s/AKfycbx7CLIJo9Oayo6KpxcvOpc_mdOivNkPHSyTOE2fJJ5BxOLck-V8vUrVgVPfhVyBkvkI/exec";
+    const API = "https://script.google.com/macros/s/AKfycbwPMZ1b0jHG2IMa4gU30Y9PpGxWhrhuDOtB_ah-oItjseTmuR33fUTnwjodY2d741Av/exec";
     
     // ================= STATE =================
     let currentRole = "";
@@ -825,7 +825,6 @@
 
     // ================= CORS-FRIENDLY API CALLS (GET with query params) =================
     async function callAPI(action, params) {
-  // Build query string
   const queryString = new URLSearchParams({
     action: action,
     ...params,
@@ -833,11 +832,9 @@
   }).toString();
   
   try {
-    // ✅ Remove Content-Type header for GET requests
     const response = await fetch(`${API}?${queryString}`, {
       method: 'GET',
-      // DO NOT include headers - especially NOT Content-Type
-      // This prevents preflight OPTIONS request
+      // NO headers property at all for GET requests
     });
     
     if (!response.ok) {
