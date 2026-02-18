@@ -1102,7 +1102,7 @@
                 <span class="history-type ${isClinical ? 'clinical' : 'pharmacy'}">${isClinical ? '🩺 Clinical' : '💊 Pharmacy'}</span>
               </div>
               <div class="history-meta">
-                <div class="meta-item"><i class="fas fa-user-md"></i><span>Dr. ${h.doctorName || 'Unknown'}</span></div>
+                <div class="meta-item"><i class="fas fa-user-md"></i><span>Dr. ${(h.doctorName || 'Unknown').replace(/^Dr\.\s*/i, '')}</span></div>
                 ${meds.length > 0 ? `<div class="meta-item"><i class="fas fa-pills"></i><span>${meds.length} Medicine${meds.length > 1 ? 's' : ''}</span></div>` : ''}
               </div>
               ${h.diagnosis ? `<div class="diagnosis-box"><strong><i class="fas fa-stethoscope"></i> Diagnosis</strong><div>${h.diagnosis.replace(/\n/g, '<br>')}</div></div>` : ''}
