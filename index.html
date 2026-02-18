@@ -1,1414 +1,1483 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HMS - Hospital Management System</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>
-:root {
---primary: #0d9488;
---primary-dark: #0f766e;
---primary-light: #14b8a6;
---secondary: #64748b;
---success: #10b981;
---danger: #ef4444;
---warning: #f59e0b;
---info: #3b82f6;
---bg: #f8fafc;
---bg-card: #ffffff;
---text: #1e293b;
---text-light: #64748b;
---border: #e2e8f0;
---shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
---shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
---radius: 12px;
---transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-font-family: 'Inter', sans-serif;
-background: linear-gradient(135deg, #f0fdfa 0%, #f8fafc 100%);
-min-height: 100vh;
-color: var(--text);
-line-height: 1.6;
-display: flex;
-flex-direction: column;
-}
-.header {
-background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-color: white;
-padding: 1rem 2rem;
-position: sticky;
-top: 0;
-z-index: 100;
-display: flex;
-justify-content: space-between;
-align-items: center;
-box-shadow: var(--shadow);
-}
-.logo {
-display: flex;
-align-items: center;
-gap: 0.75rem;
-font-weight: 700;
-font-size: 1.25rem;
-}
-.logo i { font-size: 1.75rem; }
-.user-menu { display: flex; align-items: center; gap: 1rem; }
-.user-badge {
-display: flex;
-align-items: center;
-gap: 0.5rem;
-padding: 0.5rem 1rem;
-background: rgba(255,255,255,0.15);
-border-radius: 50px;
-font-size: 0.875rem;
-}
-.logout-btn {
-background: rgba(255,255,255,0.2);
-color: white;
-border: 1px solid rgba(255,255,255,0.3);
-padding: 0.5rem 1rem;
-border-radius: 8px;
-font-size: 0.875rem;
-cursor: pointer;
-transition: var(--transition);
-display: flex;
-align-items: center;
-gap: 0.5rem;
-}
-.logout-btn:hover { background: rgba(255,255,255,0.3); }
-.container { max-width: 1200px; margin: 0 auto; padding: 2rem; flex: 1; }
-.card {
-background: var(--bg-card);
-border-radius: 16px;
-box-shadow: var(--shadow-lg);
-padding: 1.5rem 2rem;
-margin-bottom: 1.5rem;
-border: 1px solid var(--border);
-animation: fadeInUp 0.4s ease-out;
-}
-@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-.card-header {
-display: flex;
-align-items: center;
-gap: 0.75rem;
-margin-bottom: 1.5rem;
-padding-bottom: 1rem;
-border-bottom: 2px solid var(--bg);
-}
-.card-header i {
-font-size: 1.5rem;
-color: var(--primary);
-width: 40px;
-height: 40px;
-display: flex;
-align-items: center;
-justify-content: center;
-background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
-border-radius: 10px;
-color: white;
-}
-.card-header h2 { font-size: 1.25rem; font-weight: 700; }
-.form-group { margin-bottom: 1.25rem; }
-.form-label {
-display: block;
-margin-bottom: 0.5rem;
-font-weight: 500;
-font-size: 0.875rem;
-display: flex;
-align-items: center;
-gap: 0.5rem;
-}
-.form-label .required { color: var(--danger); }
-.form-input, .form-textarea, .form-select {
-width: 100%;
-padding: 0.75rem 1rem;
-border: 2px solid var(--border);
-border-radius: var(--radius);
-font-size: 0.875rem;
-transition: var(--transition);
-font-family: inherit;
-}
-.form-input:focus, .form-textarea:focus, .form-select:focus {
-outline: none;
-border-color: var(--primary);
-box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
-}
-.form-textarea { resize: vertical; min-height: 100px; }
-.form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
-.form-hint { font-size: 0.75rem; color: var(--text-light); margin-top: 0.25rem; }
-.btn {
-padding: 0.75rem 1.5rem;
-border: none;
-border-radius: var(--radius);
-font-size: 0.875rem;
-font-weight: 600;
-cursor: pointer;
-transition: var(--transition);
-display: inline-flex;
-align-items: center;
-justify-content: center;
-gap: 0.5rem;
-}
-.btn-primary {
-background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-color: white;
-}
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(13, 148, 136, 0.4); }
-.btn-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
-.btn-secondary:hover { background: var(--border); }
-.btn-danger { background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%); color: white; }
-.btn-success { background: linear-gradient(135deg, var(--success) 0%, #059669 100%); color: white; }
-.btn-warning { background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%); color: white; }
-.btn-sm { padding: 0.5rem 1rem; font-size: 0.75rem; }
-.btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
-.btn-loading { position: relative; pointer-events: none; }
-.btn-loading::before {
-content: '';
-position: absolute;
-width: 16px; height: 16px;
-border: 2px solid rgba(255,255,255,0.3);
-border-top-color: white;
-border-radius: 50%;
-animation: spin 0.8s linear infinite;
-margin-right: 0.5rem;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.toast-container {
-position: fixed;
-top: 1rem; right: 1rem;
-z-index: 1000;
-display: flex;
-flex-direction: column;
-gap: 0.75rem;
-max-width: 400px;
-}
-.toast {
-padding: 1rem 1.25rem;
-border-radius: var(--radius);
-box-shadow: var(--shadow-lg);
-display: flex;
-align-items: flex-start;
-gap: 0.75rem;
-animation: slideInRight 0.3s ease-out;
-font-weight: 500;
-font-size: 0.875rem;
-border-left: 4px solid;
-background: white;
-}
-@keyframes slideInRight { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-.toast.success { border-left-color: var(--success); background: #f0fdf4; color: #065f46; }
-.toast.error { border-left-color: var(--danger); background: #fef2f2; color: #991b1b; }
-.toast.warning { border-left-color: var(--warning); background: #fffbeb; color: #92400e; }
-.toast.info { border-left-color: var(--info); background: #eff6ff; color: #1e40af; }
-.toast i { font-size: 1.25rem; margin-top: 2px; }
-.search-box { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
-.search-box .form-input { flex: 1; min-width: 200px; }
-.patient-card {
-background: linear-gradient(135deg, #f0fdfa 0%, #ecfdf5 100%);
-border: 2px solid var(--primary-light);
-border-radius: 16px;
-padding: 1.5rem;
-margin-bottom: 1.5rem;
-position: relative;
-}
-.patient-card::before {
-content: '';
-position: absolute;
-top: 0; left: 0; right: 0;
-height: 4px;
-background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
-}
-.patient-header {
-display: flex;
-justify-content: space-between;
-align-items: flex-start;
-margin-bottom: 1rem;
-padding-bottom: 1rem;
-border-bottom: 2px solid rgba(13, 148, 136, 0.15);
-flex-wrap: wrap;
-gap: 1rem;
-}
-.patient-name {
-font-size: 1.5rem;
-font-weight: 700;
-color: var(--primary-dark);
-display: flex;
-align-items: center;
-gap: 0.5rem;
-}
-.patient-badge {
-background: var(--success);
-color: white;
-padding: 0.25rem 0.75rem;
-border-radius: 50px;
-font-size: 0.75rem;
-font-weight: 600;
-}
-.patient-info-grid {
-display: grid;
-grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-gap: 1rem;
-}
-.info-item {
-display: flex;
-align-items: flex-start;
-gap: 0.5rem;
-padding: 0.75rem;
-background: rgba(255,255,255,0.6);
-border-radius: 8px;
-}
-.info-item i { color: var(--primary); margin-top: 0.25rem; }
-.info-label { font-size: 0.75rem; color: var(--text-light); text-transform: uppercase; font-weight: 600; }
-.info-value { font-weight: 600; color: var(--text); font-size: 0.875rem; }
-.history-section { margin-top: 2rem; }
-.history-card {
-background: white;
-border: 1px solid var(--border);
-border-radius: var(--radius);
-padding: 1.25rem;
-margin-bottom: 1rem;
-transition: var(--transition);
-position: relative;
-}
-.history-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); border-color: var(--primary-light); }
-.history-card::before {
-content: '';
-position: absolute;
-left: 0; top: 0; bottom: 0;
-width: 4px;
-background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
-}
-.history-card.clinical::before { background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%); }
-.history-card.pharmacy::before { background: linear-gradient(180deg, #10b981 0%, #059669 100%); }
-.history-header {
-display: flex;
-justify-content: space-between;
-align-items: center;
-margin-bottom: 1rem;
-flex-wrap: wrap;
-gap: 0.5rem;
-}
-.history-date {
-display: inline-flex;
-align-items: center;
-gap: 0.5rem;
-padding: 0.25rem 0.75rem;
-background: var(--bg);
-border-radius: 50px;
-font-size: 0.75rem;
-font-weight: 600;
-color: var(--text-light);
-}
-.history-type {
-padding: 0.25rem 0.75rem;
-border-radius: 50px;
-font-size: 0.75rem;
-font-weight: 600;
-text-transform: uppercase;
-}
-.history-type.clinical { background: #dbeafe; color: #1e40af; }
-.history-type.pharmacy { background: #dcfce7; color: #166534; }
-.history-meta { display: flex; gap: 1.5rem; margin-bottom: 1rem; flex-wrap: wrap; font-size: 0.875rem; }
-.meta-item { display: flex; align-items: center; gap: 0.5rem; color: var(--text-light); }
-.meta-item i { color: var(--primary); }
-.diagnosis-box {
-background: #fffbeb;
-border-left: 4px solid var(--warning);
-padding: 1rem;
-border-radius: 0 var(--radius) var(--radius) 0;
-margin: 1rem 0;
-font-size: 0.875rem;
-}
-.diagnosis-box strong { display: flex; align-items: center; gap: 0.5rem; color: #92400e; margin-bottom: 0.5rem; }
-.examination-box {
-background: #eff6ff;
-border-left: 4px solid var(--info);
-padding: 1rem;
-border-radius: 0 var(--radius) var(--radius) 0;
-margin: 1rem 0;
-font-size: 0.875rem;
-}
-.examination-box strong { display: flex; align-items: center; gap: 0.5rem; color: #1e40af; margin-bottom: 0.5rem; }
-.medicines-list {
-background: #f0fdf4;
-border: 1px solid #bbf7d0;
-border-radius: var(--radius);
-padding: 1rem;
-margin-top: 1rem;
-}
-.medicines-list strong { display: flex; align-items: center; gap: 0.5rem; color: #065f46; margin-bottom: 0.75rem; }
-.medicine-item {
-padding: 0.75rem;
-background: white;
-border-radius: 8px;
-margin-bottom: 0.5rem;
-display: grid;
-grid-template-columns: 2fr 1fr 1fr 1fr auto;
-gap: 1rem;
-align-items: center;
-font-size: 0.875rem;
-border: 1px solid #dcfce7;
-}
-.medicine-item:last-child { margin-bottom: 0; }
-.medicine-name { font-weight: 600; color: var(--text); }
-.medicine-detail { color: var(--text-light); font-size: 0.75rem; }
-.medicine-price { font-weight: 600; color: var(--primary-dark); text-align: right; }
-.history-actions { margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--border); display: flex; gap: 0.5rem; flex-wrap: wrap; }
-.medicine-row {
-display: grid;
-grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr auto;
-gap: 0.75rem;
-align-items: end;
-margin-bottom: 0.75rem;
-padding: 1rem;
-background: var(--bg);
-border-radius: var(--radius);
-border: 1px solid var(--border);
-}
-.medicine-row.clinical { grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto; }
-.btn-icon {
-width: 40px; height: 40px;
-border-radius: var(--radius);
-border: none;
-cursor: pointer;
-display: flex;
-align-items: center;
-justify-content: center;
-transition: var(--transition);
-background: #fee2e2;
-color: var(--danger);
-}
-.btn-icon:hover { background: var(--danger); color: white; transform: scale(1.05); }
-.role-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; padding: 0.25rem; background: var(--bg); border-radius: var(--radius); width: fit-content; }
-.role-tab {
-padding: 0.5rem 1.25rem;
-background: transparent;
-border: none;
-border-radius: 8px;
-font-size: 0.875rem;
-font-weight: 500;
-color: var(--text-light);
-cursor: pointer;
-transition: var(--transition);
-display: flex;
-align-items: center;
-gap: 0.5rem;
-}
-.role-tab:hover { background: white; color: var(--text); box-shadow: var(--shadow); }
-.role-tab.active { background: white; color: var(--primary-dark); font-weight: 600; box-shadow: var(--shadow); }
-.role-tab.active i { color: var(--primary); }
-.table-responsive { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-th { background: var(--bg); padding: 1rem; text-align: left; font-weight: 600; border-bottom: 2px solid var(--border); }
-td { padding: 1rem; border-bottom: 1px solid var(--border); }
-tr:hover { background: var(--bg); }
-.badge {
-display: inline-flex;
-align-items: center;
-gap: 0.25rem;
-padding: 0.25rem 0.75rem;
-border-radius: 50px;
-font-size: 0.75rem;
-font-weight: 600;
-text-transform: uppercase;
-}
-.badge-success { background: #d1fae5; color: #065f46; }
-.badge-warning { background: #fef3c7; color: #92400e; }
-.badge-danger { background: #fee2e2; color: #991b1b; }
-.badge-info { background: #dbeafe; color: #1e40af; }
-.badge-doctor { background: #dbeafe; color: #1e40af; }
-.badge-admin { background: #fef3c7; color: #92400e; }
-.badge-receptionist { background: #e0e7ff; color: #3730a3; }
-.badge-pharmacist { background: #dcfce7; color: #166534; }
-.empty-state { text-align: center; padding: 3rem 2rem; color: var(--text-light); }
-.empty-state i { font-size: 4rem; margin-bottom: 1rem; opacity: 0.3; color: var(--primary); }
-.empty-state h3 { font-size: 1.125rem; margin-bottom: 0.5rem; color: var(--text); font-weight: 600; }
-.loading { display: flex; align-items: center; justify-content: center; gap: 0.75rem; padding: 2rem; color: var(--text-light); }
-.spinner {
-width: 24px; height: 24px;
-border: 3px solid var(--border);
-border-top-color: var(--primary);
-border-radius: 50%;
-animation: spin 0.8s linear infinite;
-}
-.bill-summary {
-background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
-border: 2px solid #bbf7d0;
-border-radius: var(--radius);
-padding: 1.25rem;
-margin-top: 1rem;
-}
-.bill-row { display: flex; justify-content: space-between; padding: 0.5rem 0; font-size: 0.875rem; border-bottom: 1px dashed #dcfce7; }
-.bill-row:last-child { border-bottom: none; padding-top: 0.75rem; margin-top: 0.75rem; border-top: 2px solid #10b981; font-weight: 700; font-size: 1.125rem; color: var(--primary-dark); }
-.bill-row span:first-child { color: var(--text-light); }
-.bill-row span:last-child { font-weight: 600; }
-.hidden { display: none !important; }
-.mt-1 { margin-top: 1rem; }
-.mt-2 { margin-top: 2rem; }
-.mb-1 { margin-bottom: 1rem; }
-.flex { display: flex; }
-.flex-wrap { flex-wrap: wrap; }
-.gap-1 { gap: 0.5rem; }
-.gap-2 { gap: 1rem; }
-.items-center { align-items: center; }
-.justify-between { justify-content: space-between; }
-.justify-end { justify-content: flex-end; }
-
-/* ========== FOOTER STYLES ========== */
-.site-footer {
-  text-align: center;
-  padding: 1.5rem 2rem;
-  color: var(--text-light);
-  font-size: 0.75rem;
-  border-top: 1px solid var(--border);
-  background: linear-gradient(to bottom, var(--bg-card), var(--bg));
-  margin-top: auto;
-}
-.site-footer a {
-  color: var(--primary);
-  text-decoration: none;
-  font-weight: 600;
-  transition: var(--transition);
-}
-.site-footer a:hover {
-  color: var(--primary-dark);
-  text-decoration: underline;
-}
-.site-footer .developer-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.25rem 0.75rem;
-  background: rgba(13, 148, 136, 0.1);
-  border-radius: 50px;
-  margin-top: 0.5rem;
-}
-@media print {
-  .site-footer { display: none !important; }
-}
-
-@media (max-width: 768px) {
-.header { padding: 1rem; flex-direction: column; gap: 1rem; text-align: center; }
-.container { padding: 1rem; }
-.card { padding: 1.25rem; }
-.form-row { grid-template-columns: 1fr; }
-.medicine-row, .medicine-row.clinical { grid-template-columns: 1fr; }
-.patient-header { flex-direction: column; align-items: flex-start; }
-.history-meta { flex-direction: column; gap: 0.5rem; }
-.medicine-item { grid-template-columns: 1fr; gap: 0.5rem; }
-.search-box { flex-direction: column; }
-.search-box .form-input { min-width: 100%; }
-.role-tabs { width: 100%; justify-content: center; }
-.role-tab { flex: 1; justify-content: center; }
-}
-@media print {
-.header, .toast-container, .btn, .no-print { display: none !important; }
-body { background: white; }
-.card { box-shadow: none; border: 1px solid #ddd; page-break-inside: avoid; }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HMS - Hospital Management System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --primary: #0d9488;
+      --primary-dark: #0f766e;
+      --primary-light: #14b8a6;
+      --secondary: #64748b;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --info: #3b82f6;
+      --bg: #f8fafc;
+      --bg-card: #ffffff;
+      --text: #1e293b;
+      --text-light: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+      --radius: 12px;
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #f0fdfa 0%, #f8fafc 100%);
+      min-height: 100vh;
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .header {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+      padding: 1rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow);
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+    .logo i { font-size: 1.75rem; }
+    .user-menu { display: flex; align-items: center; gap: 1rem; }
+    .user-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: rgba(255,255,255,0.15);
+      border-radius: 50px;
+      font-size: 0.875rem;
+    }
+    .logout-btn {
+      background: rgba(255,255,255,0.2);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .logout-btn:hover { background: rgba(255,255,255,0.3); }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    .card {
+      background: var(--bg-card);
+      border-radius: 16px;
+      box-shadow: var(--shadow-lg);
+      padding: 1.5rem 2rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border);
+      animation: fadeInUp 0.4s ease-out;
+    }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid var(--bg);
+    }
+    .card-header i {
+      font-size: 1.5rem;
+      color: var(--primary);
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
+      border-radius: 10px;
+      color: white;
+    }
+    .card-header h2 { font-size: 1.25rem; font-weight: 700; }
+    .form-group { margin-bottom: 1.25rem; }
+    .form-label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .form-label .required { color: var(--danger); }
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      transition: var(--transition);
+      font-family: inherit;
+    }
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+    }
+    .form-textarea { resize: vertical; min-height: 100px; }
+    .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+    .form-hint { font-size: 0.75rem; color: var(--text-light); margin-top: 0.25rem; }
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(13, 148, 136, 0.4); }
+    .btn-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: var(--border); }
+    .btn-danger { background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%); color: white; }
+    .btn-success { background: linear-gradient(135deg, var(--success) 0%, #059669 100%); color: white; }
+    .btn-warning { background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%); color: white; }
+    .btn-sm { padding: 0.5rem 1rem; font-size: 0.75rem; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
+    .btn-loading { position: relative; pointer-events: none; }
+    .btn-loading::before {
+      content: '';
+      position: absolute;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 0.5rem;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .toast-container {
+      position: fixed;
+      top: 1rem; right: 1rem;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      max-width: 400px;
+    }
+    .toast {
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      animation: slideInRight 0.3s ease-out;
+      font-weight: 500;
+      font-size: 0.875rem;
+      border-left: 4px solid;
+      background: white;
+    }
+    @keyframes slideInRight { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    .toast.success { border-left-color: var(--success); background: #f0fdf4; color: #065f46; }
+    .toast.error { border-left-color: var(--danger); background: #fef2f2; color: #991b1b; }
+    .toast.warning { border-left-color: var(--warning); background: #fffbeb; color: #92400e; }
+    .toast.info { border-left-color: var(--info); background: #eff6ff; color: #1e40af; }
+    .toast i { font-size: 1.25rem; margin-top: 2px; }
+    .search-box { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+    .search-box .form-input { flex: 1; min-width: 200px; }
+    .patient-card {
+      background: linear-gradient(135deg, #f0fdfa 0%, #ecfdf5 100%);
+      border: 2px solid var(--primary-light);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+    .patient-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+    }
+    .patient-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid rgba(13, 148, 136, 0.15);
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .patient-name {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .patient-badge {
+      background: var(--success);
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .patient-info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+    }
+    .info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      padding: 0.75rem;
+      background: rgba(255,255,255,0.6);
+      border-radius: 8px;
+    }
+    .info-item i { color: var(--primary); margin-top: 0.25rem; }
+    .info-label { font-size: 0.75rem; color: var(--text-light); text-transform: uppercase; font-weight: 600; }
+    .info-value { font-weight: 600; color: var(--text); font-size: 0.875rem; }
+    .history-section { margin-top: 2rem; }
+    .history-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      transition: var(--transition);
+      position: relative;
+    }
+    .history-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); border-color: var(--primary-light); }
+    .history-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 4px;
+      background: linear-gradient(180deg, var(--primary) 0%, var(--primary-dark) 100%);
+    }
+    .history-card.clinical::before { background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%); }
+    .history-card.pharmacy::before { background: linear-gradient(180deg, #10b981 0%, #059669 100%); }
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .history-date {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0.75rem;
+      background: var(--bg);
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-light);
+    }
+    .history-type {
+      padding: 0.25rem 0.75rem;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .history-type.clinical { background: #dbeafe; color: #1e40af; }
+    .history-type.pharmacy { background: #dcfce7; color: #166534; }
+    .history-meta { display: flex; gap: 1.5rem; margin-bottom: 1rem; flex-wrap: wrap; font-size: 0.875rem; }
+    .meta-item { display: flex; align-items: center; gap: 0.5rem; color: var(--text-light); }
+    .meta-item i { color: var(--primary); }
+    .diagnosis-box {
+      background: #fffbeb;
+      border-left: 4px solid var(--warning);
+      padding: 1rem;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      margin: 1rem 0;
+      font-size: 0.875rem;
+    }
+    .diagnosis-box strong { display: flex; align-items: center; gap: 0.5rem; color: #92400e; margin-bottom: 0.5rem; }
+    .examination-box {
+      background: #eff6ff;
+      border-left: 4px solid var(--info);
+      padding: 1rem;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      margin: 1rem 0;
+      font-size: 0.875rem;
+    }
+    .examination-box strong { display: flex; align-items: center; gap: 0.5rem; color: #1e40af; margin-bottom: 0.5rem; }
+    .medicines-list {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: var(--radius);
+      padding: 1rem;
+      margin-top: 1rem;
+    }
+    .medicines-list strong { display: flex; align-items: center; gap: 0.5rem; color: #065f46; margin-bottom: 0.75rem; }
+    .medicine-item {
+      padding: 0.75rem;
+      background: white;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr auto;
+      gap: 1rem;
+      align-items: center;
+      font-size: 0.875rem;
+      border: 1px solid #dcfce7;
+    }
+    .medicine-item:last-child { margin-bottom: 0; }
+    .medicine-name { font-weight: 600; color: var(--text); }
+    .medicine-detail { color: var(--text-light); font-size: 0.75rem; }
+    .medicine-price { font-weight: 600; color: var(--primary-dark); text-align: right; }
+    .history-actions { margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--border); display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .medicine-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr auto;
+      gap: 0.75rem;
+      align-items: end;
+      margin-bottom: 0.75rem;
+      padding: 1rem;
+      background: var(--bg);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+    .medicine-row.clinical { grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto; }
+    .btn-icon {
+      width: 40px; height: 40px;
+      border-radius: var(--radius);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      background: #fee2e2;
+      color: var(--danger);
+    }
+    .btn-icon:hover { background: var(--danger); color: white; transform: scale(1.05); }
+    .role-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; padding: 0.25rem; background: var(--bg); border-radius: var(--radius); width: fit-content; }
+    .role-tab {
+      padding: 0.5rem 1.25rem;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-light);
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .role-tab:hover { background: white; color: var(--text); box-shadow: var(--shadow); }
+    .role-tab.active { background: white; color: var(--primary-dark); font-weight: 600; box-shadow: var(--shadow); }
+    .role-tab.active i { color: var(--primary); }
+    .table-responsive { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    th { background: var(--bg); padding: 1rem; text-align: left; font-weight: 600; border-bottom: 2px solid var(--border); }
+    td { padding: 1rem; border-bottom: 1px solid var(--border); }
+    tr:hover { background: var(--bg); }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 50px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .badge-success { background: #d1fae5; color: #065f46; }
+    .badge-warning { background: #fef3c7; color: #92400e; }
+    .badge-danger { background: #fee2e2; color: #991b1b; }
+    .badge-info { background: #dbeafe; color: #1e40af; }
+    .badge-doctor { background: #dbeafe; color: #1e40af; }
+    .badge-admin { background: #fef3c7; color: #92400e; }
+    .badge-receptionist { background: #e0e7ff; color: #3730a3; }
+    .badge-pharmacist { background: #dcfce7; color: #166534; }
+    .empty-state { text-align: center; padding: 3rem 2rem; color: var(--text-light); }
+    .empty-state i { font-size: 4rem; margin-bottom: 1rem; opacity: 0.3; color: var(--primary); }
+    .empty-state h3 { font-size: 1.125rem; margin-bottom: 0.5rem; color: var(--text); font-weight: 600; }
+    .loading { display: flex; align-items: center; justify-content: center; gap: 0.75rem; padding: 2rem; color: var(--text-light); }
+    .spinner {
+      width: 24px; height: 24px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    .bill-summary {
+      background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+      border: 2px solid #bbf7d0;
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-top: 1rem;
+    }
+    .bill-row { display: flex; justify-content: space-between; padding: 0.5rem 0; font-size: 0.875rem; border-bottom: 1px dashed #dcfce7; }
+    .bill-row:last-child { border-bottom: none; padding-top: 0.75rem; margin-top: 0.75rem; border-top: 2px solid #10b981; font-weight: 700; font-size: 1.125rem; color: var(--primary-dark); }
+    .bill-row span:first-child { color: var(--text-light); }
+    .bill-row span:last-child { font-weight: 600; }
+    .hidden { display: none !important; }
+    .mt-1 { margin-top: 1rem; }
+    .mt-2 { margin-top: 2rem; }
+    .mb-1 { margin-bottom: 1rem; }
+    .flex { display: flex; }
+    .flex-wrap { flex-wrap: wrap; }
+    .gap-1 { gap: 0.5rem; }
+    .gap-2 { gap: 1rem; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .justify-end { justify-content: flex-end; }
+    @media (max-width: 768px) {
+      .header { padding: 1rem; flex-direction: column; gap: 1rem; text-align: center; }
+      .container { padding: 1rem; }
+      .card { padding: 1.25rem; }
+      .form-row { grid-template-columns: 1fr; }
+      .medicine-row, .medicine-row.clinical { grid-template-columns: 1fr; }
+      .patient-header { flex-direction: column; align-items: flex-start; }
+      .history-meta { flex-direction: column; gap: 0.5rem; }
+      .medicine-item { grid-template-columns: 1fr; gap: 0.5rem; }
+      .search-box { flex-direction: column; }
+      .search-box .form-input { min-width: 100%; }
+      .role-tabs { width: 100%; justify-content: center; }
+      .role-tab { flex: 1; justify-content: center; }
+    }
+    @media print {
+      .header, .toast-container, .btn, .no-print { display: none !important; }
+      body { background: white; }
+      .card { box-shadow: none; border: 1px solid #ddd; page-break-inside: avoid; }
+    }
+  </style>
 </head>
 <body>
-<!-- ========== HEADER ========== -->
-<header class="header">
-<div class="logo">
-<i class="fas fa-hospital"></i>
-<div>
-<div style="font-size:1.125rem">HMS Hospital</div>
-<div style="font-size:0.75rem;opacity:0.9">Healthcare Management System</div>
-</div>
-</div>
-<div class="user-menu">
-<div id="userBadge" class="user-badge hidden">
-<i class="fas fa-user-circle"></i>
-<span id="userName">User</span>
-<span id="userRole" class="badge badge-info">Role</span>
-</div>
-<button id="logoutBtn" class="logout-btn hidden" onclick="logout()">
-<i class="fas fa-sign-out-alt"></i>
-Logout
-</button>
-</div>
-</header>
 
-<!-- ========== TOAST CONTAINER ========== -->
-<div id="toastContainer" class="toast-container"></div>
+  <!-- ========== HEADER ========== -->
+  <header class="header">
+    <div class="logo">
+      <i class="fas fa-hospital"></i>
+      <div>
+        <div style="font-size:1.125rem"> HMS</div>
+        <div style="font-size:0.75rem;opacity:0.9">Hospital Management System</div>
+      </div>
+    </div>
+    <div class="user-menu">
+      <div id="userBadge" class="user-badge hidden">
+        <i class="fas fa-user-circle"></i>
+        <span id="userName">User</span>
+        <span id="userRole" class="badge badge-info">Role</span>
+      </div>
+      <button id="logoutBtn" class="logout-btn hidden" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i>
+        Logout
+      </button>
+    </div>
+  </header>
 
-<!-- ========== MAIN CONTENT ========== -->
-<div class="container">
-<!-- ========== LOGIN CARD ========== -->
-<div id="loginCard" class="card" style="max-width: 500px; margin: 3rem auto;">
-<div class="card-header">
-<i class="fas fa-lock"></i>
-<h2>Secure Login</h2>
-</div>
-<div class="form-group">
-<label class="form-label">Email Address <span class="required">*</span></label>
-<input type="email" id="email" class="form-input" placeholder="doctor@hmshospital.com" autocomplete="email">
-<div class="form-hint"><i class="fas fa-info-circle"></i> Enter your registered email address</div>
-</div>
-<button id="sendOtpBtn" class="btn btn-primary" onclick="sendOTP()" style="width: 100%;">
-<i class="fas fa-paper-plane"></i>
-Send OTP
-</button>
-<div id="otpSection" class="hidden mt-2" style="padding-top: 1.5rem; border-top: 2px solid var(--bg);">
-<div class="form-group">
-<label class="form-label">Enter 6-Digit OTP <span class="required">*</span></label>
-<input type="text" id="otp" class="form-input" placeholder="••••••" maxlength="6" style="text-align: center; font-size: 1.5rem; letter-spacing: 0.5rem;" autocomplete="one-time-code">
-<div class="form-hint"><i class="fas fa-clock"></i> OTP valid for 10 minutes</div>
-</div>
-<button class="btn btn-success" onclick="verifyOTP()" style="width: 100%;">
-<i class="fas fa-check"></i>
-Verify & Login
-</button>
-</div>
-</div>
+  <!-- ========== TOAST CONTAINER ========== -->
+  <div id="toastContainer" class="toast-container"></div>
 
-<!-- ========== DASHBOARD ========== -->
-<div id="dashboard" class="hidden">
-<!-- ========== SEARCH PATIENT ========== -->
-<div class="card">
-<div class="card-header">
-<i class="fas fa-search"></i>
-<h2>Search Patient</h2>
-</div>
-<div class="search-box">
-<input type="text" id="searchInput" class="form-input" placeholder="Enter Phone Number or Patient ID">
-<button class="btn btn-primary" onclick="searchPatient()">
-<i class="fas fa-search"></i>
-Search
-</button>
-<button class="btn btn-secondary" onclick="clearSearch()">
-<i class="fas fa-redo"></i>
-Clear
-</button>
-</div>
-<div id="searchResult"></div>
-</div>
+  <!-- ========== MAIN CONTENT ========== -->
+  <div class="container">
 
-<!-- ========== RECEPTIONIST: ADD PATIENT ========== -->
-<div id="receptionistSection" class="card hidden">
-<div class="card-header">
-<i class="fas fa-user-plus"></i>
-<h2>Register New Patient</h2>
-</div>
-<div class="form-row">
-<div class="form-group">
-<label class="form-label">First Name <span class="required">*</span></label>
-<input type="text" id="firstName" class="form-input" placeholder="John">
-</div>
-<div class="form-group">
-<label class="form-label">Last Name <span class="required">*</span></label>
-<input type="text" id="lastName" class="form-input" placeholder="Doe">
-</div>
-</div>
-<div class="form-row">
-<div class="form-group">
-<label class="form-label">Age</label>
-<input type="number" id="age" class="form-input" placeholder="25" min="0" max="120">
-</div>
-<div class="form-group">
-<label class="form-label">Gender</label>
-<select id="gender" class="form-select">
-<option value="">Select Gender</option>
-<option value="Male">Male</option>
-<option value="Female">Female</option>
-<option value="Other">Other</option>
-</select>
-</div>
-</div>
-<div class="form-group">
-<label class="form-label">Phone Number <span class="required">*</span></label>
-<input type="tel" id="phone" class="form-input" placeholder="+91 98765 43210">
-<div class="form-hint"><i class="fas fa-phone"></i> 10-digit mobile number preferred</div>
-</div>
-<div class="form-group">
-<label class="form-label">Email Address</label>
-<input type="email" id="patientEmail" class="form-input" placeholder="patient@email.com">
-</div>
-<div class="form-group">
-<label class="form-label">Address <span class="required">*</span></label>
-<textarea id="address" class="form-textarea" placeholder="Full address with area, city, pincode..." rows="3"></textarea>
-</div>
-<div class="flex gap-2 flex-wrap">
-<button class="btn btn-success" onclick="addPatient()">
-<i class="fas fa-check"></i>
-Register Patient
-</button>
-<button class="btn btn-secondary" onclick="clearInputs(['firstName','lastName','age','phone','patientEmail','address']); document.getElementById('gender').value='';">
-<i class="fas fa-trash"></i>
-Clear Form
-</button>
-</div>
-<button class="btn btn-primary mt-2" id="generateRegBtn" onclick="generateRegistrationForm()" disabled>
-<i class="fas fa-file-pdf"></i>
-Generate Registration Form (PDF)
-</button>
-</div>
+    <!-- ========== LOGIN CARD ========== -->
+    <div id="loginCard" class="card" style="max-width: 500px; margin: 3rem auto;">
+      <div class="card-header">
+        <i class="fas fa-lock"></i>
+        <h2>Secure Login</h2>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Email Address <span class="required">*</span></label>
+        <input type="email" id="email" class="form-input" placeholder="doctor@hms.com" autocomplete="email">
+        <div class="form-hint"><i class="fas fa-info-circle"></i> Enter your registered email address</div>
+      </div>
 
-<!-- ========== DOCTOR: CLINICAL RECORD ========== -->
-<div id="doctorSection" class="card hidden">
-<div class="card-header">
-<i class="fas fa-stethoscope"></i>
-<h2 id="clinicalTitle">Clinical Record</h2>
-</div>
-<div class="role-tabs" id="doctorTabs">
-<button class="role-tab active" onclick="switchDoctorTab('prescription')">
-<i class="fas fa-prescription"></i>
-Prescription
-</button>
-<button class="role-tab" onclick="switchDoctorTab('examination')">
-<i class="fas fa-clipboard-list"></i>
-Examination
-</button>
-</div>
-<!-- Prescription Tab -->
-<div id="prescriptionTab">
-<div class="form-group">
-<label class="form-label">Diagnosis & Clinical Notes</label>
-<textarea id="diagnosis" class="form-textarea" placeholder="Enter patient diagnosis, symptoms, observations..." rows="4"></textarea>
-<div class="form-hint"><i class="fas fa-lightbulb"></i> Be specific with diagnosis for better patient care</div>
-</div>
-<h3>
-<i class="fas fa-pills" style="color: var(--primary); margin-right: 0.5rem;"></i>
-Prescribed Medicines
-<span style="font-size: 0.75rem; color: var(--text-light); font-weight: normal; margin-left: 0.5rem;">(Clinical view - pricing hidden)</span>
-</h3>
-<div id="medicineContainer"></div>
-<button class="btn btn-secondary" onclick="addMedicineRow('clinical')" style="margin: 1rem 0;">
-<i class="fas fa-plus"></i>
-Add Medicine
-</button>
-</div>
-<!-- Examination Tab -->
-<div id="examinationTab" class="hidden">
-<div class="form-group">
-<label class="form-label">Examination Details</label>
-<textarea id="examination" class="form-textarea" placeholder="Vital Signs: BP, Pulse, Temperature&#10;Physical Examination Findings&#10;Lab Results / Imaging Reports..." rows="6"></textarea>
-<div class="form-hint"><i class="fas fa-info-circle"></i> Document all relevant clinical findings</div>
-</div>
-</div>
-<div class="flex gap-2 flex-wrap mt-2">
-<button class="btn btn-primary" id="submitClinicalBtn" onclick="submitClinicalRecord()">
-<i class="fas fa-file-prescription"></i>
-Generate Clinical Prescription
-</button>
-<button class="btn btn-secondary" onclick="clearClinicalForm()">
-<i class="fas fa-trash"></i>
-Clear Form
-</button>
-</div>
-</div>
+      <button id="sendOtpBtn" class="btn btn-primary" onclick="sendOTP()" style="width: 100%;">
+        <i class="fas fa-paper-plane"></i>
+        Send OTP
+      </button>
 
-<!-- ========== PHARMACIST: BILLING ========== -->
-<div id="pharmacistSection" class="card hidden">
-<div class="card-header">
-<i class="fas fa-cash-register"></i>
-<h2>Pharmacy Billing</h2>
-</div>
-<div id="pharmacyPatientInfo" class="patient-card" style="margin-bottom: 1.5rem; padding: 1rem; background: white;">
-<strong><i class="fas fa-user"></i> Patient:</strong> <span id="pharmacyPatientName">-</span><br>
-<strong><i class="fas fa-id-card"></i> UHID:</strong> <span id="pharmacyPatientUHID">-</span><br>
-<strong><i class="fas fa-map-marker-alt"></i> Address:</strong> <span id="pharmacyPatientAddress">-</span>
-</div>
-<h3>
-<i class="fas fa-pills" style="color: var(--success); margin-right: 0.5rem;"></i>
-Medicines for Billing
-<span style="font-size: 0.75rem; color: var(--text-light); font-weight: normal; margin-left: 0.5rem;">(Include pricing for invoice)</span>
-</h3>
-<div id="pharmacyMedicineContainer"></div>
-<button class="btn btn-secondary" onclick="addMedicineRow('pharmacy')" style="margin: 1rem 0;">
-<i class="fas fa-plus"></i>
-Add Medicine with Price
-</button>
-<div class="bill-summary">
-<strong style="display: block; margin-bottom: 0.75rem; color: var(--primary-dark);"><i class="fas fa-calculator"></i> Bill Summary</strong>
-<div id="billSummary">
-<div class="bill-row"><span>Gross Amount:</span><span>₹ 0.00</span></div>
-<div class="bill-row"><span>GST 5%:</span><span>₹ 0.00</span></div>
-<div class="bill-row"><span><strong>Net Amount:</strong></span><span><strong>₹ 0.00</strong></span></div>
-</div>
-</div>
-<button class="btn btn-success mt-2" onclick="generatePharmacyBill()" style="width: 100%;">
-<i class="fas fa-file-invoice"></i>
-Generate Pharmacy Bill (PDF)
-</button>
-</div>
+      <div id="otpSection" class="hidden mt-2" style="padding-top: 1.5rem; border-top: 2px solid var(--bg);">
+        <div class="form-group">
+          <label class="form-label">Enter 6-Digit OTP <span class="required">*</span></label>
+          <input type="text" id="otp" class="form-input" placeholder="••••••" maxlength="6" style="text-align: center; font-size: 1.5rem; letter-spacing: 0.5rem;" autocomplete="one-time-code">
+          <div class="form-hint"><i class="fas fa-clock"></i> OTP valid for 10 minutes</div>
+        </div>
+        <button class="btn btn-success" onclick="verifyOTP()" style="width: 100%;">
+          <i class="fas fa-check"></i>
+          Verify & Login
+        </button>
+      </div>
+    </div>
 
-<!-- ========== SUPER ADMIN: USER MANAGEMENT ========== -->
-<div id="superAdminSection" class="card hidden">
-<div class="card-header">
-<i class="fas fa-users-cog"></i>
-<h2>User Management</h2>
-</div>
-<div style="background: var(--bg); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem;">
-<h3 style="margin-bottom: 1rem;">
-<i class="fas fa-user-plus" style="color: var(--primary);"></i>
-Create New User
-</h3>
-<div class="form-row">
-<div class="form-group">
-<label class="form-label">Full Name <span class="required">*</span></label>
-<input type="text" id="newUserName" class="form-input" placeholder="Dr. John Smith">
-</div>
-<div class="form-group">
-<label class="form-label">Email Address <span class="required">*</span></label>
-<input type="email" id="newUserEmail" class="form-input" placeholder="john@hmshospital.com">
-</div>
-</div>
-<div class="form-group">
-<label class="form-label">Role <span class="required">*</span></label>
-<select id="newUserRole" class="form-select">
-<option value="">Select Role</option>
-<option value="receptionist">📋 Receptionist</option>
-<option value="doctor">🩺 Doctor</option>
-<option value="pharmacist">💊 Pharmacist</option>
-<option value="admin">⚙️ Admin</option>
-</select>
-<div class="form-hint"><i class="fas fa-shield-alt"></i> Role determines access permissions</div>
-</div>
-<button class="btn btn-success" onclick="createUser()">
-<i class="fas fa-plus-circle"></i>
-Create User & Send Credentials
-</button>
-</div>
-<h3 style="margin-bottom: 1rem;">
-<i class="fas fa-list" style="color: var(--primary);"></i>
-All Users
-</h3>
-<div id="usersListContainer" class="table-responsive">
-<div class="loading"><div class="spinner"></div> Loading users...</div>
-</div>
-</div>
-</div>
-</div>
+    <!-- ========== DASHBOARD ========== -->
+    <div id="dashboard" class="hidden">
 
-<!-- ========== FOOTER ========== -->
-<footer class="site-footer">
-  <div>&copy; <span id="currentYear"></span> HMS Hospital Management System. All rights reserved.</div>
-  <div class="developer-badge">
-    <i class="fas fa-laptop-code"></i>
-    Developed by 
-    <a href="https://mahammadgousesk.com/" target="_blank" rel="noopener">Mahamad Gouse</a>
+      <!-- ========== SEARCH PATIENT ========== -->
+      <div class="card">
+        <div class="card-header">
+          <i class="fas fa-search"></i>
+          <h2>Search Patient</h2>
+        </div>
+
+        <div class="search-box">
+          <input type="text" id="searchInput" class="form-input" placeholder="Enter Phone Number or Patient ID">
+          <button class="btn btn-primary" onclick="searchPatient()">
+            <i class="fas fa-search"></i>
+            Search
+          </button>
+          <button class="btn btn-secondary" onclick="clearSearch()">
+            <i class="fas fa-redo"></i>
+            Clear
+          </button>
+        </div>
+
+        <div id="searchResult"></div>
+      </div>
+
+      <!-- ========== RECEPTIONIST: ADD PATIENT ========== -->
+      <div id="receptionistSection" class="card hidden">
+        <div class="card-header">
+          <i class="fas fa-user-plus"></i>
+          <h2>Register New Patient</h2>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">First Name <span class="required">*</span></label>
+            <input type="text" id="firstName" class="form-input" placeholder="John">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Name <span class="required">*</span></label>
+            <input type="text" id="lastName" class="form-input" placeholder="Doe">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Age</label>
+            <input type="number" id="age" class="form-input" placeholder="25" min="0" max="120">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Gender</label>
+            <select id="gender" class="form-select">
+              <option value="">Select Gender</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Phone Number <span class="required">*</span></label>
+          <input type="tel" id="phone" class="form-input" placeholder="+91 98765 43210">
+          <div class="form-hint"><i class="fas fa-phone"></i> 10-digit mobile number preferred</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email Address</label>
+          <input type="email" id="patientEmail" class="form-input" placeholder="patient@email.com">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Address <span class="required">*</span></label>
+          <textarea id="address" class="form-textarea" placeholder="Full address with area, city, pincode..." rows="3"></textarea>
+        </div>
+
+        <div class="flex gap-2 flex-wrap">
+          <button class="btn btn-success" onclick="addPatient()">
+            <i class="fas fa-check"></i>
+            Register Patient
+          </button>
+          <button class="btn btn-secondary" onclick="clearInputs(['firstName','lastName','age','phone','patientEmail','address']); document.getElementById('gender').value='';">
+            <i class="fas fa-trash"></i>
+            Clear Form
+          </button>
+        </div>
+
+        <button class="btn btn-primary mt-2" id="generateRegBtn" onclick="generateRegistrationForm()" disabled>
+          <i class="fas fa-file-pdf"></i>
+          Generate Registration Form (PDF)
+        </button>
+      </div>
+
+      <!-- ========== DOCTOR: CLINICAL RECORD ========== -->
+      <div id="doctorSection" class="card hidden">
+        <div class="card-header">
+          <i class="fas fa-stethoscope"></i>
+          <h2 id="clinicalTitle">Clinical Record</h2>
+        </div>
+
+        <div class="role-tabs" id="doctorTabs">
+          <button class="role-tab active" onclick="switchDoctorTab('prescription')">
+            <i class="fas fa-prescription"></i>
+            Prescription
+          </button>
+          <button class="role-tab" onclick="switchDoctorTab('examination')">
+            <i class="fas fa-clipboard-list"></i>
+            Examination
+          </button>
+        </div>
+
+        <!-- Prescription Tab -->
+        <div id="prescriptionTab">
+          <div class="form-group">
+            <label class="form-label">Diagnosis & Clinical Notes</label>
+            <textarea id="diagnosis" class="form-textarea" placeholder="Enter patient diagnosis, symptoms, observations..." rows="4"></textarea>
+            <div class="form-hint"><i class="fas fa-lightbulb"></i> Be specific with diagnosis for better patient care</div>
+          </div>
+
+          <h3>
+            <i class="fas fa-pills" style="color: var(--primary); margin-right: 0.5rem;"></i>
+            Prescribed Medicines
+            <span style="font-size: 0.75rem; color: var(--text-light); font-weight: normal; margin-left: 0.5rem;">(Clinical view - pricing hidden)</span>
+          </h3>
+
+          <div id="medicineContainer"></div>
+
+          <button class="btn btn-secondary" onclick="addMedicineRow('clinical')" style="margin: 1rem 0;">
+            <i class="fas fa-plus"></i>
+            Add Medicine
+          </button>
+        </div>
+
+        <!-- Examination Tab -->
+        <div id="examinationTab" class="hidden">
+          <div class="form-group">
+            <label class="form-label">Examination Details</label>
+            <textarea id="examination" class="form-textarea" placeholder="Vital Signs: BP, Pulse, Temperature&#10;Physical Examination Findings&#10;Lab Results / Imaging Reports..." rows="6"></textarea>
+            <div class="form-hint"><i class="fas fa-info-circle"></i> Document all relevant clinical findings</div>
+          </div>
+        </div>
+
+        <div class="flex gap-2 flex-wrap mt-2">
+          <button class="btn btn-primary" id="submitClinicalBtn" onclick="submitClinicalRecord()">
+            <i class="fas fa-file-prescription"></i>
+            Generate Clinical Prescription
+          </button>
+          <button class="btn btn-secondary" onclick="clearClinicalForm()">
+            <i class="fas fa-trash"></i>
+            Clear Form
+          </button>
+        </div>
+      </div>
+
+      <!-- ========== PHARMACIST: BILLING ========== -->
+      <div id="pharmacistSection" class="card hidden">
+        <div class="card-header">
+          <i class="fas fa-cash-register"></i>
+          <h2>Pharmacy Billing</h2>
+        </div>
+
+        <div id="pharmacyPatientInfo" class="patient-card" style="margin-bottom: 1.5rem; padding: 1rem; background: white;">
+          <strong><i class="fas fa-user"></i> Patient:</strong> <span id="pharmacyPatientName">-</span><br>
+          <strong><i class="fas fa-id-card"></i> UHID:</strong> <span id="pharmacyPatientUHID">-</span><br>
+          <strong><i class="fas fa-map-marker-alt"></i> Address:</strong> <span id="pharmacyPatientAddress">-</span>
+        </div>
+
+        <h3>
+          <i class="fas fa-pills" style="color: var(--success); margin-right: 0.5rem;"></i>
+          Medicines for Billing
+          <span style="font-size: 0.75rem; color: var(--text-light); font-weight: normal; margin-left: 0.5rem;">(Include pricing for invoice)</span>
+        </h3>
+
+        <div id="pharmacyMedicineContainer"></div>
+
+        <button class="btn btn-secondary" onclick="addMedicineRow('pharmacy')" style="margin: 1rem 0;">
+          <i class="fas fa-plus"></i>
+          Add Medicine with Price
+        </button>
+
+        <div class="bill-summary">
+          <strong style="display: block; margin-bottom: 0.75rem; color: var(--primary-dark);"><i class="fas fa-calculator"></i> Bill Summary</strong>
+          <div id="billSummary">
+            <div class="bill-row"><span>Gross Amount:</span><span>₹ 0.00</span></div>
+            <div class="bill-row"><span>GST 5%:</span><span>₹ 0.00</span></div>
+            <div class="bill-row"><span><strong>Net Amount:</strong></span><span><strong>₹ 0.00</strong></span></div>
+          </div>
+        </div>
+
+        <button class="btn btn-success mt-2" onclick="generatePharmacyBill()" style="width: 100%;">
+          <i class="fas fa-file-invoice"></i>
+          Generate Pharmacy Bill (PDF)
+        </button>
+      </div>
+
+      <!-- ========== SUPER ADMIN: USER MANAGEMENT ========== -->
+      <div id="superAdminSection" class="card hidden">
+        <div class="card-header">
+          <i class="fas fa-users-cog"></i>
+          <h2>User Management</h2>
+        </div>
+
+        <div style="background: var(--bg); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem;">
+          <h3 style="margin-bottom: 1rem;">
+            <i class="fas fa-user-plus" style="color: var(--primary);"></i>
+            Create New User
+          </h3>
+          
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Full Name <span class="required">*</span></label>
+              <input type="text" id="newUserName" class="form-input" placeholder="Dr. John Smith">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Email Address <span class="required">*</span></label>
+              <input type="email" id="newUserEmail" class="form-input" placeholder="john@hms.com">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Role <span class="required">*</span></label>
+            <select id="newUserRole" class="form-select">
+              <option value="">Select Role</option>
+              <option value="receptionist">📋 Receptionist</option>
+              <option value="doctor">🩺 Doctor</option>
+              <option value="pharmacist">💊 Pharmacist</option>
+              <option value="admin">⚙️ Admin</option>
+            </select>
+            <div class="form-hint"><i class="fas fa-shield-alt"></i> Role determines access permissions</div>
+          </div>
+
+          <button class="btn btn-success" onclick="createUser()">
+            <i class="fas fa-plus-circle"></i>
+            Create User & Send Credentials
+          </button>
+        </div>
+
+        <h3 style="margin-bottom: 1rem;">
+          <i class="fas fa-list" style="color: var(--primary);"></i>
+          All Users
+        </h3>
+
+        <div id="usersListContainer" class="table-responsive">
+          <div class="loading"><div class="spinner"></div> Loading users...</div>
+        </div>
+      </div>
+
+    </div>
   </div>
-</footer>
 
-<!-- ========== JAVASCRIPT ========== -->
-<script>
-// Auto-update year in footer
-document.getElementById('currentYear').textContent = new Date().getFullYear();
+  <!-- ========== JAVASCRIPT ========== -->
+  <script>
+    // ================= CONFIGURATION =================
+    const API = "https://script.google.com/macros/s/AKfycbyvJaRRdXuNwSUNal98UrzPQsH5U8QLp49QHqrcfhf8sfVZpT3_e9-KDyUYyNJLYpfK/exec";
+    
+    // ================= STATE =================
+    let currentRole = "";
+    let currentPatient = {};
+    let editingHistoryId = null;
+    let currentTab = 'prescription';
 
-// ================= CONFIGURATION =================
-const API = "https://script.google.com/macros/s/AKfycbyvJaRRdXuNwSUNal98UrzPQsH5U8QLp49QHqrcfhf8sfVZpT3_e9-KDyUYyNJLYpfK/exec";
-// ================= STATE =================
-let currentRole = "";
-let currentPatient = {};
-let editingHistoryId = null;
-let currentTab = 'prescription';
-// ================= TOAST NOTIFICATIONS =================
-function showToast(message, type = 'info', duration = 4000) {
-const container = document.getElementById('toastContainer');
-const toast = document.createElement('div');
-toast.className = `toast ${type}`;
-const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
-const [title, msg] = message.split('|');
-toast.innerHTML = `
-<i class="fas ${icons[type]}"></i>
-<div>
-${title ? `<strong>${title}</strong><br>` : ''}
-${msg || title}
-</div>
-`;
-container.appendChild(toast);
-setTimeout(() => {
-toast.style.opacity = '0';
-toast.style.transform = 'translateX(400px)';
-setTimeout(() => toast.remove(), 300);
-}, duration);
+    // ================= TOAST NOTIFICATIONS =================
+    function showToast(message, type = 'info', duration = 4000) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      
+      const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+      const [title, msg] = message.split('|');
+      
+      toast.innerHTML = `
+        <i class="fas ${icons[type]}"></i>
+        <div>
+          ${title ? `<strong>${title}</strong><br>` : ''}
+          ${msg || title}
+        </div>
+      `;
+      
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(400px)';
+        setTimeout(() => toast.remove(), 300);
+      }, duration);
+    }
+
+    // ================= CORS-FRIENDLY API CALLS (GET with query params) =================
+    function callAPI(action, params) {
+  return new Promise((resolve, reject) => {
+    const callbackName = 'callback_' + Date.now();
+    const queryString = new URLSearchParams({
+      action: action,
+      callback: callbackName,
+      ...params,
+      t: Date.now()
+    }).toString();
+    
+    // Create script tag for JSONP
+    const script = document.createElement('script');
+    script.src = `${API}?${queryString}`;
+    
+    // Global callback
+    window[callbackName] = function(data) {
+      delete window[callbackName];
+      document.head.removeChild(script);
+      resolve(data);
+    };
+    
+    script.onerror = function() {
+      delete window[callbackName];
+      document.head.removeChild(script);
+      reject(new Error('Script load error'));
+    };
+    
+    document.head.appendChild(script);
+    
+    // Timeout
+    setTimeout(() => {
+      if (window[callbackName]) {
+        delete window[callbackName];
+        if (script.parentNode) document.head.removeChild(script);
+        reject(new Error('Timeout'));
+      }
+    }, 10000);
+  });
 }
-// ================= CORS-FRIENDLY API CALLS (GET with query params) =================
-function callAPI(action, params) {
-return new Promise((resolve, reject) => {
-const callbackName = 'callback_' + Date.now();
-const queryString = new URLSearchParams({
-action: action,
-callback: callbackName,
-...params,
-t: Date.now()
-}).toString();
-// Create script tag for JSONP
-const script = document.createElement('script');
-script.src = `${API}?${queryString}`;
-// Global callback
-window[callbackName] = function(data) {
-delete window[callbackName];
-document.head.removeChild(script);
-resolve(data);
-};
-script.onerror = function() {
-delete window[callbackName];
-document.head.removeChild(script);
-reject(new Error('Script load error'));
-};
-document.head.appendChild(script);
-// Timeout
-setTimeout(() => {
-if (window[callbackName]) {
-delete window[callbackName];
-if (script.parentNode) document.head.removeChild(script);
-reject(new Error('Timeout'));
-}
-}, 10000);
-});
-}
-// ================= FORM UTILITIES =================
-function clearInputs(ids) {
-ids.forEach(id => {
-const el = document.getElementById(id);
-if (el) { el.value = ''; el.classList.remove('error'); }
-});
-}
-function setLoading(btn, loading = true) {
-if (loading) {
-btn.classList.add('btn-loading');
-btn.disabled = true;
-btn.dataset.originalText = btn.innerHTML;
-} else {
-btn.classList.remove('btn-loading');
-btn.disabled = false;
-if (btn.dataset.originalText) btn.innerHTML = btn.dataset.originalText;
-}
-}
-// ================= LOGIN =================
-function sendOTP() {
-const email = document.getElementById('email').value.trim().toLowerCase();
-if (!email) { showToast('Enter Email|Please enter your email address', 'warning'); return; }
-const btn = document.getElementById('sendOtpBtn');
-setLoading(btn, true);
-callAPI('sendOTP', { email: email })
-.then(d => {
-setLoading(btn, false);
-if (d.status === 'otpSent') {
-showToast('OTP Sent|A 6-digit code has been sent to your email', 'success');
-document.getElementById('otpSection').classList.remove('hidden');
-document.getElementById('otp').focus();
-} else if (d.status === 'inactive') {
-showToast('Account Deactivated|Please contact administrator', 'error');
-} else {
-showToast('User Not Found|This email is not registered', 'error');
-}
-})
-.catch(() => {
-setLoading(btn, false);
-showToast('Connection Error|Unable to connect to server', 'error');
-});
-}
-function verifyOTP() {
-const email = document.getElementById('email').value.trim().toLowerCase();
-const otp = document.getElementById('otp').value.trim();
-if (!email || !otp) { showToast('Enter Credentials|Please enter email and OTP', 'warning'); return; }
-const btn = event.target;
-setLoading(btn, true);
-callAPI('verifyOTP', { email: email, otp: otp })
-.then(d => {
-setLoading(btn, false);
-if (d.status === 'success') {
-currentRole = d.role;
-document.getElementById('loginCard').classList.add('hidden');
-document.getElementById('dashboard').classList.remove('hidden');
-document.getElementById('logoutBtn').classList.remove('hidden');
-document.getElementById('userBadge').classList.remove('hidden');
-document.getElementById('userName').textContent = d.name || 'User';
-document.getElementById('userRole').textContent = d.role.toUpperCase();
-document.getElementById('userRole').className = `badge ${
-d.role === 'doctor' ? 'badge-doctor' :
-d.role === 'receptionist' ? 'badge-receptionist' :
-d.role === 'pharmacist' ? 'badge-pharmacist' :
-d.role === 'superadmin' ? 'badge-danger' : 'badge-info'
-}`;
-if (currentRole === 'receptionist') document.getElementById('receptionistSection').classList.remove('hidden');
-if (currentRole === 'doctor') document.getElementById('doctorSection').classList.remove('hidden');
-if (currentRole === 'pharmacist') document.getElementById('pharmacistSection').classList.remove('hidden');
-if (currentRole === 'superadmin') {
-document.getElementById('superAdminSection').classList.remove('hidden');
-loadUsers();
-}
-showToast(`Welcome, ${d.name || 'User'}!|Logged in as ${d.role.toUpperCase()}`, 'success', 5000);
-clearInputs(['email', 'otp']);
-} else {
-showToast('Invalid OTP|Please check the code and try again', 'error');
-}
-})
-.catch(() => {
-setLoading(btn, false);
-showToast('Verification Failed|Unable to verify OTP', 'error');
-});
-}
-function logout() { location.reload(); }
-// ================= PATIENT MANAGEMENT =================
-function addPatient() {
-const data = {
-firstName: document.getElementById('firstName').value.trim(),
-lastName: document.getElementById('lastName').value.trim(),
-age: document.getElementById('age').value.trim(),
-gender: document.getElementById('gender').value,
-phone: document.getElementById('phone').value.trim(),
-email: document.getElementById('patientEmail').value.trim(),
-address: document.getElementById('address').value.trim()
-};
-if (!data.firstName || !data.lastName) { showToast('Name Required|Please enter first and last name', 'error'); return; }
-if (!data.phone) { showToast('Phone Required|Please enter phone number', 'error'); return; }
-if (!data.address) { showToast('Address Required|Please enter patient address', 'error'); return; }
-const btn = event.target;
-setLoading(btn, true);
-callAPI('addPatient', data)
-.then(d => {
-setLoading(btn, false);
-if (d.status === 'added') {
-showToast('Patient Registered|ID: ' + d.uniqueID, 'success');
-currentPatient = { uniqueID: d.uniqueID, ...data };
-document.getElementById('generateRegBtn').disabled = false;
-clearInputs(['firstName','lastName','age','phone','patientEmail','address']);
-document.getElementById('gender').value = '';
-} else {
-showToast('Registration Failed|' + (d.error || 'Please try again'), 'error');
-}
-})
-.catch(() => {
-setLoading(btn, false);
-showToast('Server Error|Unable to register patient', 'error');
-});
-}
-function generateRegistrationForm() {
-if (!currentPatient.uniqueID) { showToast('Register First|Please register the patient first', 'warning'); return; }
-const btn = document.getElementById('generateRegBtn');
-setLoading(btn, true);
-callAPI('generateRegistrationForm', currentPatient)
-.then(d => {
-setLoading(btn, false);
-if (d.status === 'generated') {
-showToast('Form Generated|Opening registration form PDF...', 'success');
-window.open(d.pdfUrl, '_blank');
-} else {
-showToast('Generation Failed|' + (d.error || 'Please try again'), 'error');
-}
-})
-.catch(() => {
-setLoading(btn, false);
-showToast('Server Error|Unable to generate form', 'error');
-});
-}
-// ================= SEARCH PATIENT =================
-function searchPatient() {
-const query = document.getElementById('searchInput').value.trim();
-const resultDiv = document.getElementById('searchResult');
-if (!query) { showToast('Enter Search Term|Please enter phone number or patient ID', 'warning'); return; }
-resultDiv.innerHTML = `<div class="card" style="margin-top: 1rem;"><div class="loading"><div class="spinner"></div> Searching patient database...</div></div>`;
-callAPI('searchPatient', { query: query, role: currentRole })
-.then(d => {
-if (!d) { resultDiv.innerHTML = ''; showToast('No Response|Server did not respond', 'error'); return; }
-if (d.status === 'error') { resultDiv.innerHTML = ''; showToast('Server Error|' + d.error, 'error'); return; }
-if (d.status !== 'found') {
-resultDiv.innerHTML = `
-<div class="empty-state">
-<i class="fas fa-user-slash"></i>
-<h3>Patient Not Found</h3>
-<p>No patient found with: <strong>${query}</strong></p>
-${currentRole === 'receptionist' ? '<p style="margin-top:1rem"><button class="btn btn-sm btn-primary" onclick="document.getElementById(\'searchInput\').value=\'\'; document.getElementById(\'receptionistSection\').scrollIntoView({behavior:\'smooth\'})">+ Register New Patient</button></p>' : ''}
-</div>
-`;
-currentPatient = {};
-return;
-}
-currentPatient = d.patient;
-renderPatientCard(d);
-if (currentRole === 'doctor') document.getElementById('doctorSection').classList.remove('hidden');
-if (currentRole === 'pharmacist') {
-document.getElementById('pharmacyPatientName').textContent = `${currentPatient.firstName} ${currentPatient.lastName}`;
-document.getElementById('pharmacyPatientUHID').textContent = currentPatient.uniqueId;
-document.getElementById('pharmacyPatientAddress').textContent = currentPatient.address || 'N/A';
-document.getElementById('pharmacistSection').classList.remove('hidden');
-}
-})
-.catch(err => {
-resultDiv.innerHTML = '';
-showToast('Search Failed|' + err.message, 'error');
-});
-}
-function renderPatientCard(d) {
-const resultDiv = document.getElementById('searchResult');
-const p = d.patient;
-let html = `
-<div class="patient-card">
-<div class="patient-header">
-<div>
-<div class="patient-name"><i class="fas fa-user-circle"></i> ${p.firstName} ${p.lastName}</div>
-<span class="patient-badge"><i class="fas fa-check"></i> Active Patient</span>
-</div>
-${currentRole === 'receptionist' ? `<button class="btn btn-sm btn-primary" onclick="generateRegistrationForm()"><i class="fas fa-file-pdf"></i> Registration Form</button>` : ''}
-</div>
-<div class="patient-info-grid">
-<div class="info-item"><i class="fas fa-id-card"></i><div><div class="info-label">Patient ID</div><div class="info-value">${p.uniqueId}</div></div></div>
-<div class="info-item"><i class="fas fa-phone"></i><div><div class="info-label">Phone</div><div class="info-value">${p.phone || 'N/A'}</div></div></div>
-<div class="info-item"><i class="fas fa-envelope"></i><div><div class="info-label">Email</div><div class="info-value">${p.email || 'N/A'}</div></div></div>
-${p.age || p.gender ? `<div class="info-item"><i class="fas fa-venus-mars"></i><div><div class="info-label">Age / Gender</div><div class="info-value">${p.age || '-'} / ${p.gender || '-'}</div></div></div>` : ''}
-${p.address ? `<div class="info-item" style="grid-column: 1 / -1;"><i class="fas fa-map-marker-alt"></i><div><div class="info-label">Address</div><div class="info-value">${p.address}</div></div></div>` : ''}
-</div>
-</div>
-`;
-if (d.history && d.history.length > 0) {
-html += `<div class="history-section"><h3 style="margin-bottom: 1rem;"><i class="fas fa-history" style="color: var(--primary); margin-right: 0.5rem;"></i>Medical History (${d.history.length} Record${d.history.length > 1 ? 's' : ''})</h3>`;
-d.history.forEach(function(h) {
-let meds = []; try { meds = JSON.parse(h.medicineJson || "[]"); } catch(e) {}
-const isClinical = h.type === 'clinical';
-const isPharmacy = h.type === 'pharmacy';
-// Fix: Remove duplicate "Dr." prefix in display
-const doctorName = (h.doctorName || 'Unknown').replace(/^Dr\.\s*/i, '');
-html += `
-<div class="history-card ${isClinical ? 'clinical' : isPharmacy ? 'pharmacy' : ''}">
-<div class="history-header">
-<div class="history-date"><i class="fas fa-calendar"></i> ${h.timestamp ? new Date(h.timestamp).toLocaleString('en-IN') : 'N/A'}</div>
-<span class="history-type ${isClinical ? 'clinical' : 'pharmacy'}">${isClinical ? '🩺 Clinical' : '💊 Pharmacy'}</span>
-</div>
-<div class="history-meta">
-<div class="meta-item"><i class="fas fa-user-md"></i><span>Dr. ${doctorName}</span></div>
-${meds.length > 0 ? `<div class="meta-item"><i class="fas fa-pills"></i><span>${meds.length} Medicine${meds.length > 1 ? 's' : ''}</span></div>` : ''}
-</div>
-${h.diagnosis ? `<div class="diagnosis-box"><strong><i class="fas fa-stethoscope"></i> Diagnosis</strong><div>${h.diagnosis.replace(/\n/g, '<br>')}</div></div>` : ''}
-${h.examination ? `<div class="examination-box"><strong><i class="fas fa-clipboard-list"></i> Examination</strong><div>${h.examination.replace(/\n/g, '<br>')}</div></div>` : ''}
-${meds.length > 0 ? `<div class="medicines-list"><strong><i class="fas fa-prescription-bottle-alt"></i> ${isPharmacy ? 'Billed Medicines' : 'Prescribed Medicines'}</strong>${meds.map(m => `<div class="medicine-item"><div class="medicine-name">${m.name || 'N/A'}</div><div class="medicine-detail">${m.dose ? `<i class="fas fa-capsules"></i> ${m.dose}` : ''}${m.frequency ? `<br><i class="fas fa-clock"></i> ${m.frequency}` : ''}</div><div class="medicine-detail">${m.days ? `<i class="fas fa-calendar-alt"></i> ${m.days} ${m.days==1?'day':'days'}` : ''}</div>${isPharmacy && m.mrp ? `<div class="medicine-price">₹${(parseFloat(m.mrp) * parseInt(m.days || 1)).toFixed(2)}</div>` : ''}</div>`).join('')}</div>` : ''}
-${h.pdfUrl ? `<div style="margin-top: 1rem;"><a href="${h.pdfUrl}" target="_blank" class="btn btn-primary btn-sm"><i class="fas fa-file-pdf"></i> View PDF Document</a></div>` : ''}
-${(currentRole === 'doctor' || currentRole === 'superadmin') ? `<div class="history-actions"><button class="btn btn-sm btn-warning" onclick="editClinical('${h.historyId}', ${JSON.stringify(h).replace(/'/g, "\\'")})"><i class="fas fa-edit"></i> Edit</button><button class="btn btn-sm btn-danger" onclick="confirmDelete('${h.historyId}')"><i class="fas fa-trash"></i> Delete</button></div>` : ''}
-${currentRole === 'pharmacist' && isClinical ? `<div class="history-actions"><button class="btn btn-sm btn-success" onclick="loadMedicinesForBilling('${h.historyId}', '${h.medicineJson}')"><i class="fas fa-cash-register"></i> Create Pharmacy Bill</button></div>` : ''}
-</div>
-`;
-});
-html += '</div>';
-} else {
-html += `<div class="empty-state" style="background: var(--bg); border-radius: var(--radius); margin-top: 1rem;"><i class="fas fa-file-medical-alt"></i><h3>No Medical Records</h3><p>This patient has no medical history yet</p>${currentRole === 'doctor' ? `<p style="margin-top:1rem"><button class="btn btn-sm btn-primary" onclick="document.getElementById('doctorSection').scrollIntoView({behavior:'smooth'})">+ Add Clinical Record</button></p>` : ''}</div>`;
-}
-resultDiv.innerHTML = html;
-}
-function clearSearch() {
-document.getElementById('searchInput').value = '';
-document.getElementById('searchResult').innerHTML = '';
-currentPatient = {};
-}
-// ================= DOCTOR: CLINICAL RECORDS =================
-function switchDoctorTab(tab) {
-currentTab = tab;
-document.querySelectorAll('#doctorTabs .role-tab').forEach(btn => btn.classList.remove('active'));
-event.currentTarget.classList.add('active');
-document.getElementById('prescriptionTab').classList.toggle('hidden', tab !== 'prescription');
-document.getElementById('examinationTab').classList.toggle('hidden', tab !== 'examination');
-}
-function addMedicineRow(type) {
-const container = document.getElementById(type === 'clinical' ? 'medicineContainer' : 'pharmacyMedicineContainer');
-const div = document.createElement('div');
-div.className = `medicine-row ${type}`;
-if (type === 'clinical') {
-div.innerHTML = `
-<input type="text" placeholder="Medicine Name *" class="form-input med-name" style="margin:0">
-<input type="text" placeholder="Dosage (e.g., 500mg)" class="form-input med-dose" style="margin:0">
-<input type="text" placeholder="Frequency (e.g., 2x/day)" class="form-input med-freq" style="margin:0">
-<input type="number" placeholder="Days" min="1" class="form-input med-days" style="margin:0">
-<input type="text" placeholder="Instructions" class="form-input med-instr" style="margin:0">
-<button type="button" class="btn-icon" onclick="this.parentElement.remove()" title="Remove"><i class="fas fa-times"></i></button>
-`;
-} else {
-div.innerHTML = `
-<input type="text" placeholder="Medicine Name *" class="form-input med-name" style="margin:0">
-<input type="number" placeholder="MRP (₹)" step="0.01" min="0" class="form-input med-mrp" style="margin:0" oninput="calculateBillSummary()">
-<input type="text" placeholder="Batch No" class="form-input med-batch" style="margin:0">
-<input type="text" placeholder="Expiry (MM/YYYY)" class="form-input med-expiry" style="margin:0">
-<input type="number" placeholder="Qty" min="1" value="1" class="form-input med-qty" style="margin:0" oninput="calculateBillSummary()">
-<input type="text" placeholder="Frequency" class="form-input med-freq" style="margin:0">
-<button type="button" class="btn-icon" onclick="this.parentElement.remove(); calculateBillSummary()" title="Remove"><i class="fas fa-times"></i></button>
-`;
-}
-container.appendChild(div);
-div.querySelector('input').focus();
-}
-function submitClinicalRecord() {
-if (!currentPatient.internalId) { showToast('Search First|Please search and select a patient first', 'warning'); return; }
-const diagnosis = document.getElementById('diagnosis').value.trim();
-const examination = document.getElementById('examination').value.trim();
-const medicines = [];
-document.querySelectorAll('#medicineContainer .medicine-row').forEach(row => {
-const name = row.querySelector('.med-name').value.trim();
-if (name) {
-medicines.push({
-name: name,
-dose: row.querySelector('.med-dose')?.value.trim() || '',
-frequency: row.querySelector('.med-freq')?.value.trim() || '',
-days: row.querySelector('.med-days')?.value.trim() || '',
-instructions: row.querySelector('.med-instr')?.value.trim() || ''
-});
-}
-});
-if (!diagnosis && !examination && medicines.length === 0) { showToast('Add Content|Please add diagnosis, examination notes, or at least one medicine', 'warning'); return; }
-// Fix: Clean doctor name before sending to backend
-const cleanDoctorName = (document.getElementById('userName').textContent || 'User').replace(/^Dr\.\s*/i, '');
-const payload = {
-patientID: currentPatient.internalId,
-patientName: `${currentPatient.firstName} ${currentPatient.lastName}`,
-patientAge: currentPatient.age,
-patientGender: currentPatient.gender,
-patientAddress: currentPatient.address,
-doctorName: cleanDoctorName,
-diagnosis: diagnosis,
-examination: examination,
-medicineJSON: JSON.stringify(medicines),
-role: currentRole
-};
-if (editingHistoryId) payload.historyID = editingHistoryId;
-const btn = document.getElementById('submitClinicalBtn');
-setLoading(btn, true);
-const action = editingHistoryId ? 'updateClinicalRecord' : 'addClinicalRecord';
-callAPI(action, payload)
-.then(d => {
-setLoading(btn, false);
-if (d.status === 'added' || d.status === 'updated') {
-showToast(editingHistoryId ? 'Prescription Updated|Clinical record updated' : 'Prescription Generated|Clinical prescription created', 'success');
-clearClinicalForm();
-searchPatient();
-} else if (d.status === 'unauthorized') {
-showToast('Access Denied|You do not have permission', 'error');
-} else {
-showToast('Failed|' + (d.error || 'Unable to save record'), 'error');
-}
-})
-.catch(() => {
-setLoading(btn, false);
-showToast('Server Error|Unable to process request', 'error');
-});
-}
-function editClinical(historyId, historyData) {
-let h;
-try { h = typeof historyData === 'string' ? JSON.parse(historyData) : historyData; } catch(e) { showToast('Error|Unable to load record', 'error'); return; }
-editingHistoryId = historyId;
-document.getElementById('clinicalTitle').textContent = '✏️ Edit Clinical Record';
-document.getElementById('submitClinicalBtn').innerHTML = '<i class="fas fa-save"></i> Update Prescription';
-document.getElementById('diagnosis').value = h.diagnosis || '';
-document.getElementById('examination').value = h.examination || '';
-document.getElementById('medicineContainer').innerHTML = '';
-try {
-const meds = JSON.parse(h.medicineJson || '[]');
-meds.forEach(m => {
-addMedicineRow('clinical');
-const rows = document.querySelectorAll('#medicineContainer .medicine-row');
-const lastRow = rows[rows.length - 1];
-lastRow.querySelector('.med-name').value = m.name || '';
-lastRow.querySelector('.med-dose').value = m.dose || '';
-lastRow.querySelector('.med-freq').value = m.frequency || '';
-lastRow.querySelector('.med-days').value = m.days || '';
-lastRow.querySelector('.med-instr').value = m.instructions || '';
-});
-} catch(e) { console.warn('Could not parse medicines:', e); }
-document.getElementById('doctorSection').scrollIntoView({ behavior: 'smooth' });
-showToast('Edit Mode|Make your changes and click Update', 'info', 3000);
-}
-function clearClinicalForm() {
-document.getElementById('diagnosis').value = '';
-document.getElementById('examination').value = '';
-document.getElementById('medicineContainer').innerHTML = '';
-editingHistoryId = null;
-document.getElementById('clinicalTitle').textContent = '🩺 Clinical Record';
-document.getElementById('submitClinicalBtn').innerHTML = '<i class="fas fa-file-prescription"></i> Generate Clinical Prescription';
-}
-// ================= PHARMACIST: BILLING =================
-function loadMedicinesForBilling(historyId, medicineJson) {
-try {
-const meds = JSON.parse(medicineJson || '[]');
-document.getElementById('pharmacyMedicineContainer').innerHTML = '';
-meds.forEach(m => {
-addMedicineRow('pharmacy');
-const rows = document.querySelectorAll('#pharmacyMedicineContainer .medicine-row');
-const lastRow = rows[rows.length - 1];
-lastRow.querySelector('.med-name').value = m.name || '';
-lastRow.querySelector('.med-mrp').value = m.mrp || m.dose || '0';
-lastRow.querySelector('.med-batch').value = m.batch || '-';
-lastRow.querySelector('.med-expiry').value = m.expiry || '-';
-lastRow.querySelector('.med-qty').value = m.days || '1';
-lastRow.querySelector('.med-freq').value = m.frequency || '';
-});
-calculateBillSummary();
-document.getElementById('pharmacistSection').scrollIntoView({ behavior: 'smooth' });
-showToast('Medicines Loaded|Ready to generate pharmacy bill', 'success');
-} catch(e) { showToast('Error|Unable to load medicines for billing', 'error'); }
-}
-function calculateBillSummary() {
-let grossAmount = 0;
-document.querySelectorAll('#pharmacyMedicineContainer .medicine-row').forEach(row => {
-const mrp = parseFloat(row.querySelector('.med-mrp').value) || 0;
-const qty = parseInt(row.querySelector('.med-qty').value) || 1;
-grossAmount += mrp * qty;
-});
-const gstRate = 0.05;
-const gstAmount = grossAmount * gstRate;
-const sgst = gstAmount / 2;
-const cgst = gstAmount / 2;
-const netAmount = grossAmount + gstAmount;
-const roundOff = Math.round(netAmount) - netAmount;
-const finalAmount = Math.round(netAmount);
-document.getElementById('billSummary').innerHTML = `
-<div class="bill-row"><span>Gross Amount:</span><span>₹ ${grossAmount.toFixed(2)}</span></div>
-<div class="bill-row"><span>Discount:</span><span>₹ 0.00</span></div>
-<div class="bill-row"><span>SGST 2.5%:</span><span>₹ ${sgst.toFixed(2)}</span></div>
-<div class="bill-row"><span>CGST 2.5%:</span><span>₹ ${cgst.toFixed(2)}</span></div>
-<div class="bill-row"><span>Round Off:</span><span>₹ ${roundOff.toFixed(2)}</span></div>
-<div class="bill-row"><span><strong>Net Amount:</strong></span><span><strong>₹ ${finalAmount.toFixed(2)}</strong></span></div>
-`;
-}
-function generatePharmacyBill() {
-if (!currentPatient.internalId) { showToast('Search First|Please search and select a patient first', 'warning'); return; }
-const medicines = [];
-document.querySelectorAll('#pharmacyMedicineContainer .medicine-row').forEach(row => {
-const name = row.querySelector('.med-name').value.trim();
-if (name) {
-medicines.push({
-name: name,
-mrp: row.querySelector('.med-mrp').value || '0',
-batch: row.querySelector('.med-batch').value || '-',
-expiry: row.querySelector('.med-expiry').value || '-',
-days: row.querySelector('.med-qty').value || '1',
-frequency: row.querySelector('.med-freq').value || ''
-});
-}
-});
-if (medicines.length === 0) { showToast('Add Medicines|Please add at least one medicine to bill', 'warning'); return; }
-const btn = event.target;
-setLoading(btn, true);
-// Fix: Clean doctor name before sending
-const cleanDoctorName = (document.getElementById('userName').textContent || 'User').replace(/^Dr\.\s*/i, '');
-callAPI('generatePharmacyBill', {
-patientID: currentPatient.internalId,
-patientName: `${currentPatient.firstName} ${currentPatient.lastName}`,
-patientAddress: currentPatient.address,
-doctorName: cleanDoctorName,
-medicineJSON: JSON.stringify(medicines)
-})
-.then(d => {
-setLoading(btn, false);
-if (d.status === 'generated') {
-showToast('Bill Generated|Opening pharmacy bill PDF...', 'success');
-window.open(d.pdfUrl, '_blank');
-} else {
-showToast('Generation Failed|' + (d.error || 'Please try again'), 'error');
-}
-})
-.catch(() => {
-setLoading(btn, false);
-showToast('Server Error|Unable to generate bill', 'error');
-});
-}
-// ================= DELETE & USER MANAGEMENT =================
-function confirmDelete(historyId) {
-if (!confirm('Are you sure you want to permanently delete this medical record?')) return;
-callAPI('deleteRecord', { historyID: historyId })
-.then(d => {
-if (d.status === 'deleted') {
-showToast('Record Deleted|Medical record has been permanently deleted', 'success');
-searchPatient();
-} else {
-showToast('Delete Failed|' + (d.error || 'Unable to delete record'), 'error');
-}
-})
-.catch(() => showToast('Server Error|Unable to process delete request', 'error'));
-}
-function loadUsers() {
-const container = document.getElementById('usersListContainer');
-container.innerHTML = '<div class="loading"><div class="spinner"></div> Loading users...</div>';
-callAPI('getAllUsers', { role: currentRole })
-.then(d => {
-if (!d || d.status !== 'success') {
-container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Unable to Load Users</h3><p>${d?.error || 'Please try again'}</p></div>`;
-return;
-}
-if (!d.users || d.users.length === 0) {
-container.innerHTML = `<div class="empty-state"><i class="fas fa-users-slash"></i><h3>No Users Found</h3><p>Create your first user using the form above</p></div>`;
-return;
-}
-let html = '<table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead><tbody>';
-d.users.forEach(user => {
-const statusClass = user.status === 'active' ? 'badge-success' : 'badge-warning';
-const statusIcon = user.status === 'active' ? 'fa-check-circle' : 'fa-pause-circle';
-const roleClass = { 'doctor': 'badge-doctor', 'receptionist': 'badge-receptionist', 'pharmacist': 'badge-pharmacist', 'admin': 'badge-admin' }[user.role] || 'badge-info';
-html += `<tr><td><strong>${user.name}</strong></td><td>${user.email}</td><td><span class="badge ${roleClass}">${user.role.toUpperCase()}</span></td><td><span class="badge ${statusClass}"><i class="fas ${statusIcon}"></i> ${user.status}</span></td><td style="font-size:0.75rem;color:var(--text-light)">${user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-IN') : 'N/A'}</td><td><button class="btn btn-sm ${user.status==='active'?'btn-warning':'btn-success'}" onclick="toggleUserStatus('${user.id}', '${user.status==='active'?'inactive':'active'}')" style="padding:0.25rem 0.75rem;margin:2px">${user.status==='active'?'Deactivate':'Activate'}</button><button class="btn btn-sm btn-secondary" onclick="resetUserPassword('${user.id}')" style="padding:0.25rem 0.75rem;margin:2px">Reset</button></td></tr>`;
-});
-html += '</tbody></table>';
-container.innerHTML = `<div class="table-responsive">${html}</div>`;
-})
-.catch(() => { container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Connection Error</h3><p>Unable to load users</p></div>`; });
-}
-function createUser() {
-const name = document.getElementById('newUserName').value.trim();
-const email = document.getElementById('newUserEmail').value.trim();
-const role = document.getElementById('newUserRole').value;
-if (!name || !email || !role) { showToast('Fill All Fields|Name, email, and role are required', 'warning'); return; }
-const btn = event.target;
-setLoading(btn, true);
-callAPI('createUser', { name: name, email: email, role: role, createdByRole: currentRole, createdByName: document.getElementById('userName').textContent || 'Super Admin' })
-.then(d => {
-setLoading(btn, false);
-if (d.status === 'created') {
-showToast('User Created|Credentials have been emailed to ' + email, 'success', 6000);
-clearInputs(['newUserName', 'newUserEmail']);
-document.getElementById('newUserRole').value = '';
-loadUsers();
-} else if (d.status === 'error' && d.error?.includes('exists')) {
-showToast('Email Exists|This email is already registered', 'error');
-} else {
-showToast('Creation Failed|' + (d.error || 'Please try again'), 'error');
-}
-})
-.catch(() => { setLoading(btn, false); showToast('Server Error|Unable to create user', 'error'); });
-}
-function toggleUserStatus(userId, newStatus) {
-const action = newStatus === 'active' ? 'activate' : 'deactivate';
-if (!confirm(`Are you sure you want to ${action} this user account?`)) return;
-callAPI('updateUserStatus', { userID: userId, status: newStatus, role: currentRole })
-.then(d => {
-if (d.status === 'updated') {
-showToast(`User ${action === 'activate' ? 'Activated' : 'Deactivated'}|Status updated`, 'success');
-loadUsers();
-} else {
-showToast('Update Failed|' + (d.error || 'Unable to update status'), 'error');
-}
-})
-.catch(() => showToast('Server Error|Unable to process request', 'error'));
-}
-function resetUserPassword(userId) {
-if (!confirm('A new password will be generated and emailed to the user. Continue?')) return;
-callAPI('resetUserPassword', { userID: userId, role: currentRole })
-.then(d => {
-if (d.status === 'reset') {
-showToast('Password Reset|New credentials have been emailed', 'success');
-} else {
-showToast('Reset Failed|' + (d.error || 'Unable to reset password'), 'error');
-}
-})
-.catch(() => showToast('Server Error|Unable to process request', 'error'));
-}
-// ================= KEYBOARD SHORTCUTS =================
-document.addEventListener('keydown', function(e) {
-if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); const s = document.getElementById('searchInput'); if (s && !s.closest('.hidden')) { s.focus(); s.select(); } }
-if (e.key === 'Escape') { /* Close modals if any */ }
-if (e.key === 'Enter' && document.getElementById('otp') === document.activeElement) { verifyOTP(); }
-});
-// ================= INITIALIZE =================
-document.addEventListener('DOMContentLoaded', function() {
-const emailInput = document.getElementById('email');
-if (emailInput && !emailInput.closest('.hidden')) emailInput.focus();
-document.querySelectorAll('.form-input, .form-textarea, .form-select').forEach(input => {
-input.addEventListener('blur', function() { if (this.hasAttribute('required') && !this.value.trim()) this.classList.add('error'); else this.classList.remove('error'); });
-input.addEventListener('input', function() { if (this.value.trim()) this.classList.remove('error'); });
-});
-});
-</script>
+
+    // ================= FORM UTILITIES =================
+    function clearInputs(ids) {
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.value = ''; el.classList.remove('error'); }
+      });
+    }
+
+    function setLoading(btn, loading = true) {
+      if (loading) {
+        btn.classList.add('btn-loading');
+        btn.disabled = true;
+        btn.dataset.originalText = btn.innerHTML;
+      } else {
+        btn.classList.remove('btn-loading');
+        btn.disabled = false;
+        if (btn.dataset.originalText) btn.innerHTML = btn.dataset.originalText;
+      }
+    }
+
+    // ================= LOGIN =================
+    function sendOTP() {
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      if (!email) { showToast('Enter Email|Please enter your email address', 'warning'); return; }
+      
+      const btn = document.getElementById('sendOtpBtn');
+      setLoading(btn, true);
+      
+      callAPI('sendOTP', { email: email })
+        .then(d => {
+          setLoading(btn, false);
+          if (d.status === 'otpSent') {
+            showToast('OTP Sent|A 6-digit code has been sent to your email', 'success');
+            document.getElementById('otpSection').classList.remove('hidden');
+            document.getElementById('otp').focus();
+          } else if (d.status === 'inactive') {
+            showToast('Account Deactivated|Please contact administrator', 'error');
+          } else {
+            showToast('User Not Found|This email is not registered', 'error');
+          }
+        })
+        .catch(() => {
+          setLoading(btn, false);
+          showToast('Connection Error|Unable to connect to server', 'error');
+        });
+    }
+
+    function verifyOTP() {
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      const otp = document.getElementById('otp').value.trim();
+      if (!email || !otp) { showToast('Enter Credentials|Please enter email and OTP', 'warning'); return; }
+      
+      const btn = event.target;
+      setLoading(btn, true);
+      
+      callAPI('verifyOTP', { email: email, otp: otp })
+        .then(d => {
+          setLoading(btn, false);
+          if (d.status === 'success') {
+            currentRole = d.role;
+            
+            document.getElementById('loginCard').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('logoutBtn').classList.remove('hidden');
+            document.getElementById('userBadge').classList.remove('hidden');
+            document.getElementById('userName').textContent = d.name || 'User';
+            document.getElementById('userRole').textContent = d.role.toUpperCase();
+            document.getElementById('userRole').className = `badge ${
+              d.role === 'doctor' ? 'badge-doctor' :
+              d.role === 'receptionist' ? 'badge-receptionist' :
+              d.role === 'pharmacist' ? 'badge-pharmacist' :
+              d.role === 'superadmin' ? 'badge-danger' : 'badge-info'
+            }`;
+            
+            if (currentRole === 'receptionist') document.getElementById('receptionistSection').classList.remove('hidden');
+            if (currentRole === 'doctor') document.getElementById('doctorSection').classList.remove('hidden');
+            if (currentRole === 'pharmacist') document.getElementById('pharmacistSection').classList.remove('hidden');
+            if (currentRole === 'superadmin') {
+              document.getElementById('superAdminSection').classList.remove('hidden');
+              loadUsers();
+            }
+            
+            showToast(`Welcome, ${d.name || 'User'}!|Logged in as ${d.role.toUpperCase()}`, 'success', 5000);
+            clearInputs(['email', 'otp']);
+          } else {
+            showToast('Invalid OTP|Please check the code and try again', 'error');
+          }
+        })
+        .catch(() => {
+          setLoading(btn, false);
+          showToast('Verification Failed|Unable to verify OTP', 'error');
+        });
+    }
+
+    function logout() { location.reload(); }
+
+    // ================= PATIENT MANAGEMENT =================
+    function addPatient() {
+      const data = {
+        firstName: document.getElementById('firstName').value.trim(),
+        lastName: document.getElementById('lastName').value.trim(),
+        age: document.getElementById('age').value.trim(),
+        gender: document.getElementById('gender').value,
+        phone: document.getElementById('phone').value.trim(),
+        email: document.getElementById('patientEmail').value.trim(),
+        address: document.getElementById('address').value.trim()
+      };
+      
+      if (!data.firstName || !data.lastName) { showToast('Name Required|Please enter first and last name', 'error'); return; }
+      if (!data.phone) { showToast('Phone Required|Please enter phone number', 'error'); return; }
+      if (!data.address) { showToast('Address Required|Please enter patient address', 'error'); return; }
+      
+      const btn = event.target;
+      setLoading(btn, true);
+      
+      callAPI('addPatient', data)
+        .then(d => {
+          setLoading(btn, false);
+          if (d.status === 'added') {
+            showToast('Patient Registered|ID: ' + d.uniqueID, 'success');
+            currentPatient = { uniqueID: d.uniqueID, ...data };
+            document.getElementById('generateRegBtn').disabled = false;
+            clearInputs(['firstName','lastName','age','phone','patientEmail','address']);
+            document.getElementById('gender').value = '';
+          } else {
+            showToast('Registration Failed|' + (d.error || 'Please try again'), 'error');
+          }
+        })
+        .catch(() => {
+          setLoading(btn, false);
+          showToast('Server Error|Unable to register patient', 'error');
+        });
+    }
+
+    function generateRegistrationForm() {
+      if (!currentPatient.uniqueID) { showToast('Register First|Please register the patient first', 'warning'); return; }
+      
+      const btn = document.getElementById('generateRegBtn');
+      setLoading(btn, true);
+      
+      callAPI('generateRegistrationForm', currentPatient)
+        .then(d => {
+          setLoading(btn, false);
+          if (d.status === 'generated') {
+            showToast('Form Generated|Opening registration form PDF...', 'success');
+            window.open(d.pdfUrl, '_blank');
+          } else {
+            showToast('Generation Failed|' + (d.error || 'Please try again'), 'error');
+          }
+        })
+        .catch(() => {
+          setLoading(btn, false);
+          showToast('Server Error|Unable to generate form', 'error');
+        });
+    }
+
+    // ================= SEARCH PATIENT =================
+    function searchPatient() {
+      const query = document.getElementById('searchInput').value.trim();
+      const resultDiv = document.getElementById('searchResult');
+      if (!query) { showToast('Enter Search Term|Please enter phone number or patient ID', 'warning'); return; }
+      
+      resultDiv.innerHTML = `<div class="card" style="margin-top: 1rem;"><div class="loading"><div class="spinner"></div> Searching patient database...</div></div>`;
+      
+      callAPI('searchPatient', { query: query, role: currentRole })
+        .then(d => {
+          if (!d) { resultDiv.innerHTML = ''; showToast('No Response|Server did not respond', 'error'); return; }
+          if (d.status === 'error') { resultDiv.innerHTML = ''; showToast('Server Error|' + d.error, 'error'); return; }
+          
+          if (d.status !== 'found') {
+            resultDiv.innerHTML = `
+              <div class="empty-state">
+                <i class="fas fa-user-slash"></i>
+                <h3>Patient Not Found</h3>
+                <p>No patient found with: <strong>${query}</strong></p>
+                ${currentRole === 'receptionist' ? '<p style="margin-top:1rem"><button class="btn btn-sm btn-primary" onclick="document.getElementById(\'searchInput\').value=\'\'; document.getElementById(\'receptionistSection\').scrollIntoView({behavior:\'smooth\'})">+ Register New Patient</button></p>' : ''}
+              </div>
+            `;
+            currentPatient = {};
+            return;
+          }
+          
+          currentPatient = d.patient;
+          renderPatientCard(d);
+          
+          if (currentRole === 'doctor') document.getElementById('doctorSection').classList.remove('hidden');
+          if (currentRole === 'pharmacist') {
+            document.getElementById('pharmacyPatientName').textContent = `${currentPatient.firstName} ${currentPatient.lastName}`;
+            document.getElementById('pharmacyPatientUHID').textContent = currentPatient.uniqueId;
+            document.getElementById('pharmacyPatientAddress').textContent = currentPatient.address || 'N/A';
+            document.getElementById('pharmacistSection').classList.remove('hidden');
+          }
+        })
+        .catch(err => {
+          resultDiv.innerHTML = '';
+          showToast('Search Failed|' + err.message, 'error');
+        });
+    }
+
+    function renderPatientCard(d) {
+      const resultDiv = document.getElementById('searchResult');
+      const p = d.patient;
+      
+      let html = `
+        <div class="patient-card">
+          <div class="patient-header">
+            <div>
+              <div class="patient-name"><i class="fas fa-user-circle"></i> ${p.firstName} ${p.lastName}</div>
+              <span class="patient-badge"><i class="fas fa-check"></i> Active Patient</span>
+            </div>
+            ${currentRole === 'receptionist' ? `<button class="btn btn-sm btn-primary" onclick="generateRegistrationForm()"><i class="fas fa-file-pdf"></i> Registration Form</button>` : ''}
+          </div>
+          
+          <div class="patient-info-grid">
+            <div class="info-item"><i class="fas fa-id-card"></i><div><div class="info-label">Patient ID</div><div class="info-value">${p.uniqueId}</div></div></div>
+            <div class="info-item"><i class="fas fa-phone"></i><div><div class="info-label">Phone</div><div class="info-value">${p.phone || 'N/A'}</div></div></div>
+            <div class="info-item"><i class="fas fa-envelope"></i><div><div class="info-label">Email</div><div class="info-value">${p.email || 'N/A'}</div></div></div>
+            ${p.age || p.gender ? `<div class="info-item"><i class="fas fa-venus-mars"></i><div><div class="info-label">Age / Gender</div><div class="info-value">${p.age || '-'} / ${p.gender || '-'}</div></div></div>` : ''}
+            ${p.address ? `<div class="info-item" style="grid-column: 1 / -1;"><i class="fas fa-map-marker-alt"></i><div><div class="info-label">Address</div><div class="info-value">${p.address}</div></div></div>` : ''}
+          </div>
+        </div>
+      `;
+      
+      if (d.history && d.history.length > 0) {
+        html += `<div class="history-section"><h3 style="margin-bottom: 1rem;"><i class="fas fa-history" style="color: var(--primary); margin-right: 0.5rem;"></i>Medical History (${d.history.length} Record${d.history.length > 1 ? 's' : ''})</h3>`;
+        
+        d.history.forEach(function(h) {
+          let meds = []; try { meds = JSON.parse(h.medicineJson || "[]"); } catch(e) {}
+          const isClinical = h.type === 'clinical';
+          const isPharmacy = h.type === 'pharmacy';
+          
+          html += `
+            <div class="history-card ${isClinical ? 'clinical' : isPharmacy ? 'pharmacy' : ''}">
+              <div class="history-header">
+                <div class="history-date"><i class="fas fa-calendar"></i> ${h.timestamp ? new Date(h.timestamp).toLocaleString('en-IN') : 'N/A'}</div>
+                <span class="history-type ${isClinical ? 'clinical' : 'pharmacy'}">${isClinical ? '🩺 Clinical' : '💊 Pharmacy'}</span>
+              </div>
+              <div class="history-meta">
+                <div class="meta-item"><i class="fas fa-user-md"></i><span>Dr. ${(h.doctorName || 'Unknown').replace(/^Dr\.\s*/i, '')}</span></div>
+                ${meds.length > 0 ? `<div class="meta-item"><i class="fas fa-pills"></i><span>${meds.length} Medicine${meds.length > 1 ? 's' : ''}</span></div>` : ''}
+              </div>
+              ${h.diagnosis ? `<div class="diagnosis-box"><strong><i class="fas fa-stethoscope"></i> Diagnosis</strong><div>${h.diagnosis.replace(/\n/g, '<br>')}</div></div>` : ''}
+              ${h.examination ? `<div class="examination-box"><strong><i class="fas fa-clipboard-list"></i> Examination</strong><div>${h.examination.replace(/\n/g, '<br>')}</div></div>` : ''}
+              ${meds.length > 0 ? `<div class="medicines-list"><strong><i class="fas fa-prescription-bottle-alt"></i> ${isPharmacy ? 'Billed Medicines' : 'Prescribed Medicines'}</strong>${meds.map(m => `<div class="medicine-item"><div class="medicine-name">${m.name || 'N/A'}</div><div class="medicine-detail">${m.dose ? `<i class="fas fa-capsules"></i> ${m.dose}` : ''}${m.frequency ? `<br><i class="fas fa-clock"></i> ${m.frequency}` : ''}</div><div class="medicine-detail">${m.days ? `<i class="fas fa-calendar-alt"></i> ${m.days} ${m.days==1?'day':'days'}` : ''}</div>${isPharmacy && m.mrp ? `<div class="medicine-price">₹${(parseFloat(m.mrp) * parseInt(m.days || 1)).toFixed(2)}</div>` : ''}</div>`).join('')}</div>` : ''}
+              ${h.pdfUrl ? `<div style="margin-top: 1rem;"><a href="${h.pdfUrl}" target="_blank" class="btn btn-primary btn-sm"><i class="fas fa-file-pdf"></i> View PDF Document</a></div>` : ''}
+              ${(currentRole === 'doctor' || currentRole === 'superadmin') ? `<div class="history-actions"><button class="btn btn-sm btn-warning" onclick="editClinical('${h.historyId}', ${JSON.stringify(h).replace(/'/g, "\\'")})"><i class="fas fa-edit"></i> Edit</button><button class="btn btn-sm btn-danger" onclick="confirmDelete('${h.historyId}')"><i class="fas fa-trash"></i> Delete</button></div>` : ''}
+              ${currentRole === 'pharmacist' && isClinical ? `<div class="history-actions"><button class="btn btn-sm btn-success" onclick="loadMedicinesForBilling('${h.historyId}', '${h.medicineJson}')"><i class="fas fa-cash-register"></i> Create Pharmacy Bill</button></div>` : ''}
+            </div>
+          `;
+        });
+        html += '</div>';
+      } else {
+        html += `<div class="empty-state" style="background: var(--bg); border-radius: var(--radius); margin-top: 1rem;"><i class="fas fa-file-medical-alt"></i><h3>No Medical Records</h3><p>This patient has no medical history yet</p>${currentRole === 'doctor' ? `<p style="margin-top:1rem"><button class="btn btn-sm btn-primary" onclick="document.getElementById('doctorSection').scrollIntoView({behavior:'smooth'})">+ Add Clinical Record</button></p>` : ''}</div>`;
+      }
+      
+      resultDiv.innerHTML = html;
+    }
+
+    function clearSearch() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('searchResult').innerHTML = '';
+      currentPatient = {};
+    }
+
+    // ================= DOCTOR: CLINICAL RECORDS =================
+    function switchDoctorTab(tab) {
+      currentTab = tab;
+      document.querySelectorAll('#doctorTabs .role-tab').forEach(btn => btn.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      document.getElementById('prescriptionTab').classList.toggle('hidden', tab !== 'prescription');
+      document.getElementById('examinationTab').classList.toggle('hidden', tab !== 'examination');
+    }
+
+    function addMedicineRow(type) {
+      const container = document.getElementById(type === 'clinical' ? 'medicineContainer' : 'pharmacyMedicineContainer');
+      const div = document.createElement('div');
+      div.className = `medicine-row ${type}`;
+      
+      if (type === 'clinical') {
+        div.innerHTML = `
+          <input type="text" placeholder="Medicine Name *" class="form-input med-name" style="margin:0">
+          <input type="text" placeholder="Dosage (e.g., 500mg)" class="form-input med-dose" style="margin:0">
+          <input type="text" placeholder="Frequency (e.g., 2x/day)" class="form-input med-freq" style="margin:0">
+          <input type="number" placeholder="Days" min="1" class="form-input med-days" style="margin:0">
+          <input type="text" placeholder="Instructions" class="form-input med-instr" style="margin:0">
+          <button type="button" class="btn-icon" onclick="this.parentElement.remove()" title="Remove"><i class="fas fa-times"></i></button>
+        `;
+      } else {
+        div.innerHTML = `
+          <input type="text" placeholder="Medicine Name *" class="form-input med-name" style="margin:0">
+          <input type="number" placeholder="MRP (₹)" step="0.01" min="0" class="form-input med-mrp" style="margin:0" oninput="calculateBillSummary()">
+          <input type="text" placeholder="Batch No" class="form-input med-batch" style="margin:0">
+          <input type="text" placeholder="Expiry (MM/YYYY)" class="form-input med-expiry" style="margin:0">
+          <input type="number" placeholder="Qty" min="1" value="1" class="form-input med-qty" style="margin:0" oninput="calculateBillSummary()">
+          <input type="text" placeholder="Frequency" class="form-input med-freq" style="margin:0">
+          <button type="button" class="btn-icon" onclick="this.parentElement.remove(); calculateBillSummary()" title="Remove"><i class="fas fa-times"></i></button>
+        `;
+      }
+      container.appendChild(div);
+      div.querySelector('input').focus();
+    }
+
+    function submitClinicalRecord() {
+      if (!currentPatient.internalId) { showToast('Search First|Please search and select a patient first', 'warning'); return; }
+      
+      const diagnosis = document.getElementById('diagnosis').value.trim();
+      const examination = document.getElementById('examination').value.trim();
+      
+      const medicines = [];
+      document.querySelectorAll('#medicineContainer .medicine-row').forEach(row => {
+        const name = row.querySelector('.med-name').value.trim();
+        if (name) {
+          medicines.push({
+            name: name,
+            dose: row.querySelector('.med-dose')?.value.trim() || '',
+            frequency: row.querySelector('.med-freq')?.value.trim() || '',
+            days: row.querySelector('.med-days')?.value.trim() || '',
+            instructions: row.querySelector('.med-instr')?.value.trim() || ''
+          });
+        }
+      });
+      
+      if (!diagnosis && !examination && medicines.length === 0) { showToast('Add Content|Please add diagnosis, examination notes, or at least one medicine', 'warning'); return; }
+      
+      const payload = {
+        patientID: currentPatient.internalId,
+        patientName: `${currentPatient.firstName} ${currentPatient.lastName}`,
+        patientAge: currentPatient.age,
+        patientGender: currentPatient.gender,
+        patientAddress: currentPatient.address,
+        doctorName: `Dr. ${document.getElementById('userName').textContent || 'User'}`,
+        diagnosis: diagnosis,
+        examination: examination,
+        medicineJSON: JSON.stringify(medicines),
+        role: currentRole
+      };
+      
+      if (editingHistoryId) payload.historyID = editingHistoryId;
+      
+      const btn = document.getElementById('submitClinicalBtn');
+      setLoading(btn, true);
+      
+      const action = editingHistoryId ? 'updateClinicalRecord' : 'addClinicalRecord';
+      
+      callAPI(action, payload)
+        .then(d => {
+          setLoading(btn, false);
+          if (d.status === 'added' || d.status === 'updated') {
+            showToast(editingHistoryId ? 'Prescription Updated|Clinical record updated' : 'Prescription Generated|Clinical prescription created', 'success');
+            clearClinicalForm();
+            searchPatient();
+          } else if (d.status === 'unauthorized') {
+            showToast('Access Denied|You do not have permission', 'error');
+          } else {
+            showToast('Failed|' + (d.error || 'Unable to save record'), 'error');
+          }
+        })
+        .catch(() => {
+          setLoading(btn, false);
+          showToast('Server Error|Unable to process request', 'error');
+        });
+    }
+
+    function editClinical(historyId, historyData) {
+      let h;
+      try { h = typeof historyData === 'string' ? JSON.parse(historyData) : historyData; } catch(e) { showToast('Error|Unable to load record', 'error'); return; }
+      
+      editingHistoryId = historyId;
+      document.getElementById('clinicalTitle').textContent = '✏️ Edit Clinical Record';
+      document.getElementById('submitClinicalBtn').innerHTML = '<i class="fas fa-save"></i> Update Prescription';
+      document.getElementById('diagnosis').value = h.diagnosis || '';
+      document.getElementById('examination').value = h.examination || '';
+      
+      document.getElementById('medicineContainer').innerHTML = '';
+      try {
+        const meds = JSON.parse(h.medicineJson || '[]');
+        meds.forEach(m => {
+          addMedicineRow('clinical');
+          const rows = document.querySelectorAll('#medicineContainer .medicine-row');
+          const lastRow = rows[rows.length - 1];
+          lastRow.querySelector('.med-name').value = m.name || '';
+          lastRow.querySelector('.med-dose').value = m.dose || '';
+          lastRow.querySelector('.med-freq').value = m.frequency || '';
+          lastRow.querySelector('.med-days').value = m.days || '';
+          lastRow.querySelector('.med-instr').value = m.instructions || '';
+        });
+      } catch(e) { console.warn('Could not parse medicines:', e); }
+      
+      document.getElementById('doctorSection').scrollIntoView({ behavior: 'smooth' });
+      showToast('Edit Mode|Make your changes and click Update', 'info', 3000);
+    }
+
+    function clearClinicalForm() {
+      document.getElementById('diagnosis').value = '';
+      document.getElementById('examination').value = '';
+      document.getElementById('medicineContainer').innerHTML = '';
+      editingHistoryId = null;
+      document.getElementById('clinicalTitle').textContent = '🩺 Clinical Record';
+      document.getElementById('submitClinicalBtn').innerHTML = '<i class="fas fa-file-prescription"></i> Generate Clinical Prescription';
+    }
+
+    // ================= PHARMACIST: BILLING =================
+    function loadMedicinesForBilling(historyId, medicineJson) {
+      try {
+        const meds = JSON.parse(medicineJson || '[]');
+        document.getElementById('pharmacyMedicineContainer').innerHTML = '';
+        
+        meds.forEach(m => {
+          addMedicineRow('pharmacy');
+          const rows = document.querySelectorAll('#pharmacyMedicineContainer .medicine-row');
+          const lastRow = rows[rows.length - 1];
+          lastRow.querySelector('.med-name').value = m.name || '';
+          lastRow.querySelector('.med-mrp').value = m.mrp || m.dose || '0';
+          lastRow.querySelector('.med-batch').value = m.batch || '-';
+          lastRow.querySelector('.med-expiry').value = m.expiry || '-';
+          lastRow.querySelector('.med-qty').value = m.days || '1';
+          lastRow.querySelector('.med-freq').value = m.frequency || '';
+        });
+        
+        calculateBillSummary();
+        document.getElementById('pharmacistSection').scrollIntoView({ behavior: 'smooth' });
+        showToast('Medicines Loaded|Ready to generate pharmacy bill', 'success');
+      } catch(e) { showToast('Error|Unable to load medicines for billing', 'error'); }
+    }
+
+    function calculateBillSummary() {
+      let grossAmount = 0;
+      document.querySelectorAll('#pharmacyMedicineContainer .medicine-row').forEach(row => {
+        const mrp = parseFloat(row.querySelector('.med-mrp').value) || 0;
+        const qty = parseInt(row.querySelector('.med-qty').value) || 1;
+        grossAmount += mrp * qty;
+      });
+      
+      const gstRate = 0.05;
+      const gstAmount = grossAmount * gstRate;
+      const sgst = gstAmount / 2;
+      const cgst = gstAmount / 2;
+      const netAmount = grossAmount + gstAmount;
+      const roundOff = Math.round(netAmount) - netAmount;
+      const finalAmount = Math.round(netAmount);
+      
+      document.getElementById('billSummary').innerHTML = `
+        <div class="bill-row"><span>Gross Amount:</span><span>₹ ${grossAmount.toFixed(2)}</span></div>
+        <div class="bill-row"><span>Discount:</span><span>₹ 0.00</span></div>
+        <div class="bill-row"><span>SGST 2.5%:</span><span>₹ ${sgst.toFixed(2)}</span></div>
+        <div class="bill-row"><span>CGST 2.5%:</span><span>₹ ${cgst.toFixed(2)}</span></div>
+        <div class="bill-row"><span>Round Off:</span><span>₹ ${roundOff.toFixed(2)}</span></div>
+        <div class="bill-row"><span><strong>Net Amount:</strong></span><span><strong>₹ ${finalAmount.toFixed(2)}</strong></span></div>
+      `;
+    }
+
+    function generatePharmacyBill() {
+      if (!currentPatient.internalId) { showToast('Search First|Please search and select a patient first', 'warning'); return; }
+      
+      const medicines = [];
+      document.querySelectorAll('#pharmacyMedicineContainer .medicine-row').forEach(row => {
+        const name = row.querySelector('.med-name').value.trim();
+        if (name) {
+          medicines.push({
+            name: name,
+            mrp: row.querySelector('.med-mrp').value || '0',
+            batch: row.querySelector('.med-batch').value || '-',
+            expiry: row.querySelector('.med-expiry').value || '-',
+            days: row.querySelector('.med-qty').value || '1',
+            frequency: row.querySelector('.med-freq').value || ''
+          });
+        }
+      });
+      
+      if (medicines.length === 0) { showToast('Add Medicines|Please add at least one medicine to bill', 'warning'); return; }
+      
+      const btn = event.target;
+      setLoading(btn, true);
+      
+      callAPI('generatePharmacyBill', {
+        patientID: currentPatient.internalId,
+        patientName: `${currentPatient.firstName} ${currentPatient.lastName}`,
+        patientAddress: currentPatient.address,
+        doctorName: `Dr. ${document.getElementById('userName').textContent || 'User'}`,
+        medicineJSON: JSON.stringify(medicines)
+      })
+      .then(d => {
+        setLoading(btn, false);
+        if (d.status === 'generated') {
+          showToast('Bill Generated|Opening pharmacy bill PDF...', 'success');
+          window.open(d.pdfUrl, '_blank');
+        } else {
+          showToast('Generation Failed|' + (d.error || 'Please try again'), 'error');
+        }
+      })
+      .catch(() => {
+        setLoading(btn, false);
+        showToast('Server Error|Unable to generate bill', 'error');
+      });
+    }
+
+    // ================= DELETE & USER MANAGEMENT =================
+    function confirmDelete(historyId) {
+      if (!confirm('Are you sure you want to permanently delete this medical record?')) return;
+      
+      callAPI('deleteRecord', { historyID: historyId })
+        .then(d => {
+          if (d.status === 'deleted') {
+            showToast('Record Deleted|Medical record has been permanently deleted', 'success');
+            searchPatient();
+          } else {
+            showToast('Delete Failed|' + (d.error || 'Unable to delete record'), 'error');
+          }
+        })
+        .catch(() => showToast('Server Error|Unable to process delete request', 'error'));
+    }
+
+    function loadUsers() {
+      const container = document.getElementById('usersListContainer');
+      container.innerHTML = '<div class="loading"><div class="spinner"></div> Loading users...</div>';
+      
+      callAPI('getAllUsers', { role: currentRole })
+        .then(d => {
+          if (!d || d.status !== 'success') {
+            container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Unable to Load Users</h3><p>${d?.error || 'Please try again'}</p></div>`;
+            return;
+          }
+          if (!d.users || d.users.length === 0) {
+            container.innerHTML = `<div class="empty-state"><i class="fas fa-users-slash"></i><h3>No Users Found</h3><p>Create your first user using the form above</p></div>`;
+            return;
+          }
+          
+          let html = '<table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Created</th><th>Actions</th></tr></thead><tbody>';
+          d.users.forEach(user => {
+            const statusClass = user.status === 'active' ? 'badge-success' : 'badge-warning';
+            const statusIcon = user.status === 'active' ? 'fa-check-circle' : 'fa-pause-circle';
+            const roleClass = { 'doctor': 'badge-doctor', 'receptionist': 'badge-receptionist', 'pharmacist': 'badge-pharmacist', 'admin': 'badge-admin' }[user.role] || 'badge-info';
+            html += `<tr><td><strong>${user.name}</strong></td><td>${user.email}</td><td><span class="badge ${roleClass}">${user.role.toUpperCase()}</span></td><td><span class="badge ${statusClass}"><i class="fas ${statusIcon}"></i> ${user.status}</span></td><td style="font-size:0.75rem;color:var(--text-light)">${user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-IN') : 'N/A'}</td><td><button class="btn btn-sm ${user.status==='active'?'btn-warning':'btn-success'}" onclick="toggleUserStatus('${user.id}', '${user.status==='active'?'inactive':'active'}')" style="padding:0.25rem 0.75rem;margin:2px">${user.status==='active'?'Deactivate':'Activate'}</button><button class="btn btn-sm btn-secondary" onclick="resetUserPassword('${user.id}')" style="padding:0.25rem 0.75rem;margin:2px">Reset</button></td></tr>`;
+          });
+          html += '</tbody></table>';
+          container.innerHTML = `<div class="table-responsive">${html}</div>`;
+        })
+        .catch(() => { container.innerHTML = `<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><h3>Connection Error</h3><p>Unable to load users</p></div>`; });
+    }
+
+    function createUser() {
+      const name = document.getElementById('newUserName').value.trim();
+      const email = document.getElementById('newUserEmail').value.trim();
+      const role = document.getElementById('newUserRole').value;
+      
+      if (!name || !email || !role) { showToast('Fill All Fields|Name, email, and role are required', 'warning'); return; }
+      
+      const btn = event.target;
+      setLoading(btn, true);
+      
+      callAPI('createUser', { name: name, email: email, role: role, createdByRole: currentRole, createdByName: document.getElementById('userName').textContent || 'Super Admin' })
+        .then(d => {
+          setLoading(btn, false);
+          if (d.status === 'created') {
+            showToast('User Created|Credentials have been emailed to ' + email, 'success', 6000);
+            clearInputs(['newUserName', 'newUserEmail']);
+            document.getElementById('newUserRole').value = '';
+            loadUsers();
+          } else if (d.status === 'error' && d.error?.includes('exists')) {
+            showToast('Email Exists|This email is already registered', 'error');
+          } else {
+            showToast('Creation Failed|' + (d.error || 'Please try again'), 'error');
+          }
+        })
+        .catch(() => { setLoading(btn, false); showToast('Server Error|Unable to create user', 'error'); });
+    }
+
+    function toggleUserStatus(userId, newStatus) {
+      const action = newStatus === 'active' ? 'activate' : 'deactivate';
+      if (!confirm(`Are you sure you want to ${action} this user account?`)) return;
+      
+      callAPI('updateUserStatus', { userID: userId, status: newStatus, role: currentRole })
+        .then(d => {
+          if (d.status === 'updated') {
+            showToast(`User ${action === 'activate' ? 'Activated' : 'Deactivated'}|Status updated`, 'success');
+            loadUsers();
+          } else {
+            showToast('Update Failed|' + (d.error || 'Unable to update status'), 'error');
+          }
+        })
+        .catch(() => showToast('Server Error|Unable to process request', 'error'));
+    }
+
+    function resetUserPassword(userId) {
+      if (!confirm('A new password will be generated and emailed to the user. Continue?')) return;
+      
+      callAPI('resetUserPassword', { userID: userId, role: currentRole })
+        .then(d => {
+          if (d.status === 'reset') {
+            showToast('Password Reset|New credentials have been emailed', 'success');
+          } else {
+            showToast('Reset Failed|' + (d.error || 'Unable to reset password'), 'error');
+          }
+        })
+        .catch(() => showToast('Server Error|Unable to process request', 'error'));
+    }
+
+    // ================= KEYBOARD SHORTCUTS =================
+    document.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); const s = document.getElementById('searchInput'); if (s && !s.closest('.hidden')) { s.focus(); s.select(); } }
+      if (e.key === 'Escape') { /* Close modals if any */ }
+      if (e.key === 'Enter' && document.getElementById('otp') === document.activeElement) { verifyOTP(); }
+    });
+
+    // ================= INITIALIZE =================
+    document.addEventListener('DOMContentLoaded', function() {
+      const emailInput = document.getElementById('email');
+      if (emailInput && !emailInput.closest('.hidden')) emailInput.focus();
+      
+      document.querySelectorAll('.form-input, .form-textarea, .form-select').forEach(input => {
+        input.addEventListener('blur', function() { if (this.hasAttribute('required') && !this.value.trim()) this.classList.add('error'); else this.classList.remove('error'); });
+        input.addEventListener('input', function() { if (this.value.trim()) this.classList.remove('error'); });
+      });
+    });
+  </script>
 </body>
 </html>
