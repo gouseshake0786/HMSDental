@@ -790,7 +790,7 @@
   <!-- ========== JAVASCRIPT ========== -->
   <script>
     // ================= CONFIGURATION =================
-    const API = "https://script.google.com/macros/s/AKfycbyGTCtqtyHVcp4uxkjF7Q7mxChnpA6vAECXiSRaQ7yoicwUCTW0BYdU7cP1ql-hr_TK/exec";
+    const API = "https://script.google.com/macros/s/AKfycbx7CLIJo9Oayo6KpxcvOpc_mdOivNkPHSyTOE2fJJ5BxOLck-V8vUrVgVPfhVyBkvkI/exec";
     
     // ================= STATE =================
     let currentRole = "";
@@ -825,28 +825,32 @@
 
     // ================= CORS-FRIENDLY API CALLS (GET with query params) =================
     async function callAPI(action, params) {
-      const queryString = new URLSearchParams({
-        action: action,
-        ...params,
-        t: Date.now() // Prevent caching
-      }).toString();
-      
-      try {
-        const response = await fetch(`${API}?${queryString}`, {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' }
-        });
-        
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        return await response.json();
-      } catch (error) {
-        console.error(`API Error (${action}):`, error);
-        if (error.message.includes('CORS') || error.message.includes('Failed to fetch')) {
-          showToast('Connection Error|Please check your internet connection', 'error');
-        }
-        throw error;
-      }
+  // Build query string
+  const queryString = new URLSearchParams({
+    action: action,
+    ...params,
+    t: Date.now()
+  }).toString();
+  
+  try {
+    // ✅ Remove Content-Type header for GET requests
+    const response = await fetch(`${API}?${queryString}`, {
+      method: 'GET',
+      // DO NOT include headers - especially NOT Content-Type
+      // This prevents preflight OPTIONS request
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
+    
+    return await response.json();
+  } catch (error) {
+    console.error(`API Error (${action}):`, error);
+    showToast('Connection Error|Please check your internet connection', 'error');
+    throw error;
+  }
+}
 
     // ================= FORM UTILITIES =================
     function clearInputs(ids) {
