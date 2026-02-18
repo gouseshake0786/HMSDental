@@ -790,7 +790,7 @@
   <!-- ========== JAVASCRIPT ========== -->
   <script>
     // ================= CONFIGURATION =================
-    const API = "https://script.google.com/macros/s/AKfycbwWvFbhU2qKFXP5WZEg_CRbQrC52dCaLqTEi9wYgGxS4If8b3dFv7XeMFG-KeEFTUWH/exec";
+    const API = "https://script.google.com/macros/s/AKfycbzEeP_HFA0gERAhvWiO1efxIJQn8HQTZS0jSxdVeLu3DVG7ZCAA0tczVBrcrsTHZEC6/exec";
     
     // ================= STATE =================
     let currentRole = "";
@@ -824,29 +824,44 @@
     }
 
     // ================= CORS-FRIENDLY API CALLS (GET with query params) =================
-    async function callAPI(action, params) {
-  const queryString = new URLSearchParams({
-    action: action,
-    ...params,
-    t: Date.now()
-  }).toString();
-  
-  try {
-    // Use no-cors mode for testing (response will be opaque)
-    const response = await fetch(`${API}?${queryString}`, {
-      method: 'GET',
-      mode: 'no-cors'
-    });
+    function callAPI(action, params) {
+  return new Promise((resolve, reject) => {
+    const callbackName = 'callback_' + Date.now();
+    const queryString = new URLSearchParams({
+      action: action,
+      callback: callbackName,
+      ...params,
+      t: Date.now()
+    }).toString();
     
-    // With no-cors, we can't read JSON, so assume success for testing
-    console.log("Request sent (opaque response)");
-    return { status: "success", message: "Request sent" };
+    // Create script tag for JSONP
+    const script = document.createElement('script');
+    script.src = `${API}?${queryString}`;
     
-  } catch (error) {
-    console.error(`API Error (${action}):`, error);
-    showToast('Connection Error|Please check your internet connection', 'error');
-    throw error;
-  }
+    // Global callback
+    window[callbackName] = function(data) {
+      delete window[callbackName];
+      document.head.removeChild(script);
+      resolve(data);
+    };
+    
+    script.onerror = function() {
+      delete window[callbackName];
+      document.head.removeChild(script);
+      reject(new Error('Script load error'));
+    };
+    
+    document.head.appendChild(script);
+    
+    // Timeout
+    setTimeout(() => {
+      if (window[callbackName]) {
+        delete window[callbackName];
+        if (script.parentNode) document.head.removeChild(script);
+        reject(new Error('Timeout'));
+      }
+    }, 10000);
+  });
 }
 
     // ================= FORM UTILITIES =================
