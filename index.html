@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TABU Hospital Internal System</title>
+
+<style>
+body{
+  font-family: Arial;
+  background:#f1f5f9;
+  margin:0;
+}
+
+.header{
+  background:#2563eb;
+  color:white;
+  padding:15px;
+  text-align:center;
+  position:sticky;
+  top:0;
+  position:relative;
+}
+
+.logout-btn{
+  position:absolute;
+  right:20px;
+  top:15px;
+  background:red;
+  padding:6px 12px;
+  border:none;
+  color:white;
+  border-radius:5px;
+  cursor:pointer;
+}
+
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:20px;
+}
+
+.card{
+  background:white;
+  padding:20px;
+  border-radius:10px;
+  margin-bottom:20px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.1);
+}
+
+input, textarea{
+  width:100%;
+  padding:8px;
+  margin:5px 0;
+  border:1px solid #ccc;
+  border-radius:5px;
+}
+
+button{
+  padding:8px 15px;
+  background:#2563eb;
+  color:white;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+  margin-top:5px;
+}
+
+button:hover{ background:#1d4ed8; }
+
+.hidden{ display:none; }
+
+.medicine-row{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr 1fr;
+  gap:5px;
+  margin-bottom:5px;
+}
+
+.history-box{
+  background:#f9fafb;
+  padding:15px;
+  margin-top:10px;
+  border-radius:6px;
+  border-left:4px solid #2563eb;
+}
+
+.history-box button{
+  margin-right:5px;
+  background:#444;
+}
+
+.delete-btn{
+  background:red;
+}
+
+@media(max-width:600px){
+  .medicine-row{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <h2>TABU Hospital System</h2>
+  <button class="logout-btn hidden" id="logoutBtn" onclick="logout()">Logout</button>
+</div>
+
+<div class="container">
+
+<!-- LOGIN -->
+<div class="card" id="loginCard">
+  <h3>Login</h3>
+  <input id="email" placeholder="Enter Email">
+  <button onclick="sendOTP()">Send OTP</button>
+  <input id="otp" placeholder="Enter OTP">
+  <button onclick="verifyOTP()">Verify</button>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="hidden">
+
+<!-- SEARCH -->
+<div class="card">
+  <h3>Search Patient</h3>
+  <input id="searchInput" placeholder="Mobile or Unique ID">
+  <button onclick="searchPatient()">Search</button>
+  <div id="searchResult"></div>
+</div>
+
+<!-- ADD PATIENT -->
+<div class="card hidden" id="patientSection">
+  <h3>Add Patient</h3>
+  <input id="firstName" placeholder="First Name">
+  <input id="lastName" placeholder="Last Name">
+  <input id="phone" placeholder="Phone">
+  <input id="patientEmail" placeholder="Email">
+  <textarea id="address" placeholder="Address"></textarea>
+  <button onclick="addPatient()">Add Patient</button>
+</div>
+
+<!-- ADD HISTORY -->
+<div class="card hidden" id="doctorSection">
+  <h3>Add Medical History</h3>
+  <textarea id="diagnosis" placeholder="Diagnosis"></textarea>
+
+  <h4>Medicines</h4>
+  <div id="medicineContainer"></div>
+  <button onclick="addMedicineRow()">Add Medicine</button>
+
+  <button onclick="submitHistory()">Generate Prescription</button>
+</div>
+
+</div>
+</div>
+
+<script>
+
+const API = "https://script.google.com/macros/s/AKfycbwXWUGiJu9TsJ-piaM1buFvXWgk-EkbHjj6q5jagcwitHmMPzWqlmoe1is2XLYbiP7UtA/exec";
+
+let currentRole="";
+let currentPatient={};
+
+/* ================= LOGIN ================= */
+
+function sendOTP(){
+fetch(API+"?action=sendOTP",{
+method:"POST",
+headers:{ "Content-Type":"application/json" },
+body:JSON.stringify({email:email.value})
+})
+.then(r=>r.json())
+.then(d=>{
+if(d.status=="otpSent") alert("OTP Sent");
+else alert("User Not Found / Inactive");
+});
+}
+
+function verifyOTP(){
+fetch(API+"?action=verifyOTP",{
+method:"POST",
+headers:{ "Content-Type":"application/json" },
+body:JSON.stringify({email:email.value,otp:otp.value})
+})
+.then(r=>r.json())
+.then(d=>{
+if(d.status=="success"){
+currentRole=d.role;
+
+loginCard.classList.add("hidden");
+dashboard.classList.remove("hidden");
+logoutBtn.classList.remove("hidden");
+
+if(currentRole=="admin") patientSection.classList.remove("hidden");
+if(currentRole=="doctor") doctorSection.classList.remove("hidden");
+
+clearInputs(["email","otp"]);
+}else{
+alert("Invalid OTP");
+}
+});
+}
+
+function logout(){
+location.reload();
+}
+
+/* ================= ADD PATIENT ================= */
+
+function addPatient(){
+fetch(API+"?action=addPatient",{
+method:"POST",
+headers:{ "Content-Type":"application/json" },
+body:JSON.stringify({
+firstName:firstName.value,
+lastName:lastName.value,
+phone:phone.value,
+email:patientEmail.value,
+address:address.value
+})
+})
+.then(r=>r.json())
+.then(d=>{
+alert("Patient ID: "+d.uniqueID);
+clearInputs(["firstName","lastName","phone","patientEmail","address"]);
+});
+}
+
+/* ================= SEARCH ================= */
+
+function searchPatient(){
+fetch(API+"?action=searchPatient",{
+method:"POST",
+headers:{ "Content-Type":"application/json" },
+body:JSON.stringify({query:searchInput.value})
+})
+.then(r=>r.json())
+.then(d=>{
+if(d.status=="found"){
+
+currentPatient={
+id:d.patient[0],
+name:d.patient[2]+" "+d.patient[3],
+email:d.patient[5],
+uniqueID:d.patient[1]
+};
+
+let html="<h4>"+currentPatient.name+"</h4>";
+html+="Phone: "+d.patient[4]+"<br><br>";
+
+d.history.forEach(h=>{
+let medicines=JSON.parse(h[5] || "[]");
+
+html+=`<div class="history-box">`;
+html+=`<b>Date:</b> ${new Date(h[3]).toLocaleString()}<br>`;
+html+=`<b>Doctor:</b> ${h[2]}<br><br>`;
+html+=`<b>Diagnosis:</b><br>${h[4].replace(/\n/g,"<br>")}<br><br>`;
+html+=`<b>Medicines:</b><br>`;
+
+medicines.forEach(m=>{
+html+=`${m.name} - ${m.dose} - ${m.frequency} - ${m.days}<br>`;
+});
+
+html+=`<br><a href="${h[6]}" target="_blank">View PDF</a><br><br>`;
+
+if(currentRole=="doctor"){
+html+=`<button onclick="editHistory(${h[0]})">Edit</button>`;
+html+=`<button class="delete-btn" onclick="deleteHistory(${h[0]})">Delete</button>`;
+}
+
+html+=`</div>`;
+});
+
+searchResult.innerHTML=html;
+
+}else{
+searchResult.innerHTML="Patient not found";
+}
+});
+}
+
+/* ================= MEDICINE ================= */
+
+function addMedicineRow(){
+let div=document.createElement("div");
+div.className="medicine-row";
+div.innerHTML=`
+<input placeholder="Medicine Name">
+<input placeholder="Dose">
+<input placeholder="Frequency">
+<input placeholder="Days">
+`;
+medicineContainer.appendChild(div);
+}
+
+function submitHistory(){
+
+if(!currentPatient.id){
+alert("Search patient first");
+return;
+}
+
+let rows=document.querySelectorAll(".medicine-row");
+let medicines=[];
+
+rows.forEach(r=>{
+let inputs=r.querySelectorAll("input");
+medicines.push({
+name:inputs[0].value,
+dose:inputs[1].value,
+frequency:inputs[2].value,
+days:inputs[3].value
+});
+});
+
+fetch(API+"?action=addHistory",{
+method:"POST",
+headers:{ "Content-Type":"application/json" },
+body:JSON.stringify({
+patientID:currentPatient.id,
+patientName:currentPatient.name,
+patientEmail:currentPatient.email,
+uniqueID:currentPatient.uniqueID,
+doctorName:"Dr.",
+diagnosis:diagnosis.value,
+medicineJSON:JSON.stringify(medicines),
+role:currentRole
+})
+})
+.then(r=>r.json())
+.then(d=>{
+if(d.status=="added"){
+alert("Prescription Generated & Email Sent");
+clearInputs(["diagnosis"]);
+medicineContainer.innerHTML="";
+searchPatient();
+}else{
+alert("Unauthorized");
+}
+});
+}
+
+/* ================= EDIT ================= */
+
+function editHistory(id){
+let newDiagnosis=prompt("Enter Diagnosis");
+if(!newDiagnosis) return;
+
+fetch(API+"?action=updateHistory",{
+method:"POST",
+headers:{ "Content-Type":"application/json" },
+body:JSON.stringify({
+historyID:id,
+diagnosis:newDiagnosis,
+medicineJSON:"[]"
+})
+})
+.then(r=>r.json())
+.then(()=>searchPatient());
+}
+
+/* ================= DELETE ================= */
+
+function deleteHistory(id){
+if(!confirm("Delete this record?")) return;
+
+fetch(API+"?action=deleteHistory",{
+method:"POST",
+headers:{ "Content-Type":"application/json" },
+body:JSON.stringify({historyID:id})
+})
+.then(r=>r.json())
+.then(()=>searchPatient());
+}
+
+/* ================= UTILITY ================= */
+
+function clearInputs(ids){
+ids.forEach(id=>document.getElementById(id).value="");
+}
+
+</script>
+
+</body>
+</html>
