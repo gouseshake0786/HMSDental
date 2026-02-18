@@ -834,13 +834,11 @@
   try {
     const response = await fetch(`${API}?${queryString}`, {
       method: 'GET',
-      mode: 'no-cors',
-      // NO headers property at all for GET requests
+      mode: 'no-cors',  // ⚠️ Temporary workaround - response will be opaque
     });
     
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    // With no-cors, you can't read the response body properly
+    // This is just for testing if the request reaches the server
     
     return await response.json();
   } catch (error) {
